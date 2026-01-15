@@ -1,10 +1,15 @@
 /**
  * Batch Optimization Script
  * Adds React.memo to multiple shared components
+ * Run with: tsx scripts/optimize-components.ts
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join, dirname, basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const componentsToOptimize = [
   'Input.tsx',
@@ -19,14 +24,14 @@ const componentsToOptimize = [
   'Pagination.tsx',
 ];
 
-const componentsDir = path.join(__dirname, '..', 'src', 'components', 'shared');
+const componentsDir = join(__dirname, '..', 'src', 'components', 'shared');
 
 function addReactMemo(filePath: string): void {
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = readFileSync(filePath, 'utf-8');
   
   // Check if already memoized
   if (content.includes('React.memo')) {
-    console.log(`✓ ${path.basename(filePath)} already optimized`);
+    console.log(`✓ ${basename(filePath)} already optimized`);
     return;
   }
   
@@ -55,24 +60,20 @@ function addReactMemo(filePath: string): void {
     '/**\n * $1\n * Optimized with React.memo\n */'
   );
   
-  fs.writeFileSync(filePath, optimized, 'utf-8');
-  console.log(`✓ Optimized ${path.basename(filePath)}`);
+  writeFileSync(filePath, optimized, 'utf-8');
+  console.log(`✓ Optimized ${basename(filePath)}`);
 }
 
 function main() {
   console.log('Starting batch optimization...\n');
   
   componentsToOptimize.forEach((fileName) => {
-    const filePath = path.join(componentsDir, fileName);
+    const filePath = join(componentsDir, fileName);
     
-    if (fs.existsSync(filePath)) {
-      try {
-        addReactMemo(filePath);
-      } catch (error) {
-        console.error(`✗ Error optimizing ${fileName}:`, error);
-      }
-    } else {
-      console.warn(`⚠ File not found: ${fileName}`);
+    try {
+      addReactMemo(filePath);
+    } catch (error) {
+      console.error(`✗ Error optimizing ${fileName}:`, error);
     }
   });
   

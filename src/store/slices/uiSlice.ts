@@ -18,7 +18,7 @@ interface Toast {
 interface Modal {
   id: string;
   component: string;
-  props?: any;
+  props?: Record<string, unknown>;
 }
 
 interface UIState {
@@ -70,7 +70,7 @@ const uiSlice = createSlice({
     },
 
     // Modals
-    openModal: (state, action: PayloadAction<{ id: string; component: string; props?: any }>) => {
+    openModal: (state, action: PayloadAction<{ id: string; component: string; props?: Record<string, unknown> }>) => {
       state.modals.push(action.payload);
     },
     closeModal: (state, action: PayloadAction<string>) => {

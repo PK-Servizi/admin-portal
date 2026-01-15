@@ -343,7 +343,7 @@ export const SUCCESS_MESSAGES = {
 // Regex Patterns
 export const REGEX = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  PHONE: /^[\d\s\-\+\(\)]+$/,
+  PHONE: /^[\d\s\-+()]+$/,
   FISCAL_CODE: /^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/,
   VAT_NUMBER: /^\d{11}$/,
   URL: /^https?:\/\/.+/,

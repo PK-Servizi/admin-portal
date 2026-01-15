@@ -32,7 +32,7 @@ export interface ServiceType {
   isActive: boolean;
   category?: string;
   icon?: string;
-  formSchema?: any;
+  formSchema?: Record<string, unknown>;
   requiredDocuments?: string[];
   createdAt: string;
   updatedAt: string;
@@ -47,7 +47,7 @@ export interface ServiceRequest {
   serviceType?: ServiceType;
   status: ServiceRequestStatus;
   priority: ServiceRequestPriority;
-  formData?: any;
+  formData?: Record<string, unknown>;
   assignedToId?: string;
   assignedTo?: User;
   notes?: ServiceRequestNote[];
@@ -68,13 +68,13 @@ export interface ServiceRequestNote {
 
 export interface CreateServiceRequestData {
   serviceTypeId: string;
-  formData: any;
+  formData: Record<string, unknown>;
 }
 
 export interface UpdateServiceRequestData {
   status?: ServiceRequestStatus;
   priority?: ServiceRequestPriority;
-  formData?: any;
+  formData?: Record<string, unknown>;
   assignedToId?: string;
 }
 

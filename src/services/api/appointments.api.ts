@@ -4,6 +4,7 @@
  */
 
 import { baseApi, API_TAGS } from './base.api';
+import { AppointmentStatus } from '@/types';
 import type {
   ApiResponse,
   PaginatedApiResponse,
@@ -70,7 +71,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
               userId: '',
               scheduledDate: newAppointment.scheduledDate,
               duration: newAppointment.duration,
-              status: 'scheduled' as any,
+              status: AppointmentStatus.SCHEDULED,
               meetingType: newAppointment.meetingType,
               notes: newAppointment.notes,
               createdAt: new Date().toISOString(),
@@ -115,7 +116,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
       ],
       onQueryStarted: async ({ id, data }, { dispatch, queryFulfilled }) => {
         // Optimistic update
-        const patchResults: any[] = [];
+        const patchResults: { undo: () => void }[] = [];
 
         patchResults.push(
           dispatch(
@@ -160,12 +161,12 @@ export const appointmentsApi = baseApi.injectEndpoints({
       ],
       onQueryStarted: async ({ id, reason }, { dispatch, queryFulfilled }) => {
         // Optimistic update
-        const patchResults: any[] = [];
+        const patchResults: { undo: () => void }[] = [];
 
         patchResults.push(
           dispatch(
             appointmentsApi.util.updateQueryData('getAppointment', id, (draft) => {
-              draft.data.status = 'cancelled' as any;
+              draft.data.status = AppointmentStatus.CANCELLED;
               if (reason) draft.data.cancelReason = reason;
             })
           )

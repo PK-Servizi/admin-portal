@@ -23,7 +23,7 @@ export interface Notification {
   channel: NotificationChannel;
   title: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   isRead: boolean;
   readAt?: string;
   sentAt?: string;

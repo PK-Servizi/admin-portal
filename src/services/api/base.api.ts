@@ -29,7 +29,7 @@ export const API_TAGS = {
 export type ApiTag = typeof API_TAGS[keyof typeof API_TAGS];
 
 // Get API base URL from environment
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3001';
 
 /**
  * Base query with automatic token injection and refresh logic
@@ -124,13 +124,15 @@ export const extractData = <T>(response: ApiResponse<T>): T => {
 /**
  * Helper to handle API errors
  */
-export const handleApiError = (error: any): string => {
-  if ('data' in error) {
-    const apiError = error.data as ApiError;
-    return apiError.message || 'An error occurred';
-  }
-  if ('error' in error) {
-    return error.error;
+export const handleApiError = (error: unknown): string => {
+  if (error && typeof error === 'object') {
+    if ('data' in error) {
+      const apiError = error.data as ApiError;
+      return apiError.message || 'An error occurred';
+    }
+    if ('error' in error && typeof error.error === 'string') {
+      return error.error;
+    }
   }
   return 'An unexpected error occurred';
 };

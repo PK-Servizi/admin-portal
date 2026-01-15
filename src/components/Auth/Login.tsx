@@ -36,8 +36,8 @@ export const Login: React.FC = () => {
       const result = await login({ email, password }).unwrap();
       toast.success(`Welcome back, ${result.data.user.firstName}!`);
       navigate('/dashboard');
-    } catch (err: any) {
-      const message = err?.data?.message || 'Login failed';
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message || 'Login failed';
       toast.error(message);
     }
   };

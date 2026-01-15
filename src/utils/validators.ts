@@ -47,7 +47,7 @@ export const email = (value: string): ValidationResult => {
 export const phone = (value: string): ValidationResult => {
   if (!value) return { valid: true };
   
-  const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+  const phoneRegex = /^[\d\s\-+()]+$/;
   const digits = value.replace(/\D/g, '');
   
   if (!phoneRegex.test(value) || digits.length < 10) {
@@ -230,7 +230,7 @@ export const password = (value: string): ValidationResult => {
     errors.push('one number');
   }
   
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
     errors.push('one special character');
   }
   

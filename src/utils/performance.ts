@@ -387,11 +387,16 @@ export function createRenderCounter(componentName: string) {
  * Detect unnecessary re-renders
  */
 export function useWhyDidYouUpdate(name: string, props: Record<string, unknown>): void {
-  if (!(import.meta as ImportMeta & { env?: { DEV?: boolean } }).env?.DEV) return;
-
   const previousProps = React.useRef<Record<string, unknown>>();
 
   React.useEffect(() => {
+    const isDev = (import.meta as ImportMeta & { env?: { DEV?: boolean } }).env?.DEV;
+    
+    if (!isDev || !previousProps.current) {
+      previousProps.current = props;
+      return;
+    }
+
     if (previousProps.current) {
       const allKeys = Object.keys({ ...previousProps.current, ...props });
       const changedProps: Record<string, { from: unknown; to: unknown }> = {};

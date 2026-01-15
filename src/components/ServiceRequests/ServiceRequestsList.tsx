@@ -38,7 +38,7 @@ export const ServiceRequestsList: React.FC = () => {
   const [deleteRequest, { isLoading: isDeleting }] = useDeleteServiceRequestMutation();
 
   // Handle create request
-  const handleCreate = async (serviceTypeId: string, formData: any) => {
+  const handleCreate = async (serviceTypeId: string, formData: Record<string, unknown>) => {
     try {
       const result = await createRequest({ serviceTypeId, formData }).unwrap();
       toast.success('Service request created successfully!');

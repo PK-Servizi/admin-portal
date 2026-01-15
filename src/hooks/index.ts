@@ -93,15 +93,17 @@ export const useToast = () => {
 export const useApiError = () => {
   const toast = useToast();
 
-  const handleError = useCallback((error: any) => {
+  const handleError = useCallback((error: unknown) => {
     let message = 'An unexpected error occurred';
     
-    if (error?.data?.message) {
-      message = error.data.message;
-    } else if (error?.error) {
-      message = error.error;
-    } else if (error?.message) {
-      message = error.message;
+    if (error && typeof error === 'object') {
+      if ('data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+        message = String(error.data.message);
+      } else if ('error' in error) {
+        message = String(error.error);
+      } else if ('message' in error) {
+        message = String(error.message);
+      }
     }
 
     toast.error(message);

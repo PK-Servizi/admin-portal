@@ -421,7 +421,7 @@ export function testAdminAPIIntegration() {
  * Run this in the browser console to verify integration
  */
 if (typeof window !== 'undefined') {
-  (window as any).testAdminAPI = testAdminAPIIntegration;
+  (window as typeof window & { testAdminAPI?: typeof testAdminAPIIntegration }).testAdminAPI = testAdminAPIIntegration;
   console.log('💡 Run window.testAdminAPI() to test the integration');
 }
 

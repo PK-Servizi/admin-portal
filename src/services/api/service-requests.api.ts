@@ -4,11 +4,13 @@
  */
 
 import { baseApi, API_TAGS } from './base.api';
+import { ServiceRequestStatus, ServiceRequestPriority } from '@/types';
 import type {
   ApiResponse,
   PaginatedApiResponse,
   ServiceRequest,
   ServiceType,
+  ServiceRequestNote,
   CreateServiceRequestData,
   UpdateServiceRequestData,
 } from '@/types';
@@ -78,8 +80,8 @@ export const serviceRequestsApi = baseApi.injectEndpoints({
               referenceNumber: 'PENDING',
               userId: '',
               serviceTypeId: newRequest.serviceTypeId,
-              status: 'draft' as any,
-              priority: 'normal' as any,
+              status: ServiceRequestStatus.DRAFT,
+              priority: ServiceRequestPriority.NORMAL,
               formData: newRequest.formData,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
@@ -216,13 +218,23 @@ export const serviceRequestsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: API_TAGS.ServiceRequest, id }],
       onQueryStarted: async ({ id, content, isInternal }, { dispatch, queryFulfilled }) => {
-        // Optimistic update
-        const tempNote = {
+        // Optimistic update - use minimal User object for temp note
+        const tempNote: ServiceRequestNote = {
           id: 'temp-' + Date.now(),
           content,
           isInternal,
           createdAt: new Date().toISOString(),
-          createdBy: 'current-user', // Will be replaced with actual data
+          createdBy: {
+            id: 'temp',
+            email: '',
+            firstName: 'User',
+            lastName: '',
+            isActive: true,
+            isEmailVerified: true,
+            role: { id: 'user', name: 'User', permissions: [] },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
         };
 
         const patchResult = dispatch(
@@ -230,7 +242,7 @@ export const serviceRequestsApi = baseApi.injectEndpoints({
             if (!draft.data.notes) {
               draft.data.notes = [];
             }
-            draft.data.notes.push(tempNote as any);
+            draft.data.notes.push(tempNote);
           })
         );
 

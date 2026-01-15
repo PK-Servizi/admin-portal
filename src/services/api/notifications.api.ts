@@ -50,7 +50,7 @@ export const notificationsApi = baseApi.injectEndpoints({
       ],
       onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
         // Optimistic update for list
-        const patchResults: any[] = [];
+        const patchResults: { undo: () => void }[] = [];
         
         dispatch(
           notificationsApi.util.updateQueryData('getMyNotifications', { page: 1, limit: 20 }, (draft) => {
@@ -90,7 +90,7 @@ export const notificationsApi = baseApi.injectEndpoints({
       ],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         // Optimistic update
-        const patchResults: any[] = [];
+        const patchResults: { undo: () => void }[] = [];
 
         // Update all notifications in cache
         dispatch(
