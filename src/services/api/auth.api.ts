@@ -29,9 +29,9 @@ export const authApi = baseApi.injectEndpoints({
       onQueryStarted: async (_, { queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          // Store tokens
-          localStorage.setItem('accessToken', data.data.tokens.accessToken);
-          localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
+          // Store tokens - backend returns flat accessToken/refreshToken
+          localStorage.setItem('accessToken', data.data.accessToken);
+          localStorage.setItem('refreshToken', data.data.refreshToken);
         } catch (error) {
           console.error('Register failed:', error);
         }
@@ -49,9 +49,9 @@ export const authApi = baseApi.injectEndpoints({
       onQueryStarted: async (_, { queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          // Store tokens
-          localStorage.setItem('accessToken', data.data.tokens.accessToken);
-          localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
+          // Store tokens - backend returns flat accessToken/refreshToken
+          localStorage.setItem('accessToken', data.data.accessToken);
+          localStorage.setItem('refreshToken', data.data.refreshToken);
         } catch (error) {
           console.error('Login failed:', error);
         }

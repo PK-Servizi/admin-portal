@@ -66,14 +66,33 @@ export const selectHasAllPermissions = (requiredPermissions: string[]) =>
 
 export const selectUserFullName = createSelector(
   [selectUser],
-  (user) => (user ? `${user.firstName} ${user.lastName}` : '')
+  (user) => {
+    if (!user) return '';
+    // Support both fullName (backend) and firstName/lastName combination
+    if (user.fullName) return user.fullName;
+    if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
+    return user.firstName || user.lastName || user.email || '';
+  }
 );
 
 export const selectUserInitials = createSelector(
   [selectUser],
   (user) => {
     if (!user) return '';
-    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+    // Support fullName (backend format) - split by space
+    if (user.fullName) {
+      const parts = user.fullName.trim().split(' ');
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+      }
+      return user.fullName.charAt(0).toUpperCase();
+    }
+    // Fallback to firstName/lastName
+    const first = user.firstName?.charAt(0) || '';
+    const last = user.lastName?.charAt(0) || '';
+    if (first || last) return `${first}${last}`.toUpperCase();
+    // Last resort: use email initial
+    return user.email?.charAt(0).toUpperCase() || '';
   }
 );
 

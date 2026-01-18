@@ -20,10 +20,29 @@ export interface UpdateUserData {
   email?: string;
   firstName?: string;
   lastName?: string;
+  fullName?: string;
   phoneNumber?: string;
+  phone?: string;
   fiscalCode?: string;
   isActive?: boolean;
   role?: string;
+}
+
+// DTO for admin creating a new user
+export interface CreateUserData {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+  fiscalCode?: string;
+  birthDate?: string;
+  birthPlace?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  province?: string;
+  country?: string;
+  roleId?: string;
 }
 
 export interface UserActivity {
@@ -43,6 +62,16 @@ export interface UserSubscription {
 
 export const usersAdminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // Create new user (Admin)
+    createUser: builder.mutation<ApiResponse<User>, CreateUserData>({
+      query: (data) => ({
+        url: '/users',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: API_TAGS.User, id: 'ADMIN_LIST' }],
+    }),
+
     // List all users (Admin)
     getAllUsers: builder.query<PaginatedApiResponse<User[]>, UserFilters>({
       query: (filters) => ({
@@ -175,6 +204,7 @@ export const usersAdminApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useCreateUserMutation,
   useGetAllUsersQuery,
   useLazyGetAllUsersQuery,
   useGetUserByIdQuery,

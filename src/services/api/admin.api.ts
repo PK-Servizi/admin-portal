@@ -83,6 +83,29 @@ export interface RequestStatisticsResult {
   averageProcessingTime: number;
 }
 
+export interface AuditLog {
+  id: string;
+  action: string;
+  resource: string;
+  resourceId?: string;
+  userId: string;
+  userEmail?: string;
+  details?: Record<string, unknown>;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
+export interface AuditLogFilters {
+  skip?: number;
+  take?: number;
+  action?: string;
+  resource?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface DocumentStats {
   total: number;
   approved: number;
@@ -287,6 +310,24 @@ export const adminApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    // Audit Logs
+    getAuditLogs: builder.query<
+      PaginatedApiResponse<AuditLog[]>,
+      AuditLogFilters
+    >({
+      query: (filters) => ({
+        url: '/admin/audit-logs',
+        params: filters,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              { type: API_TAGS.Report, id: 'AUDIT_LIST' },
+            ]
+          : [{ type: API_TAGS.Report, id: 'AUDIT_LIST' }],
+      keepUnusedDataFor: 60,
+    }),
   }),
   overrideExisting: false,
 });
@@ -307,4 +348,6 @@ export const {
   useGetRequestStatisticsQuery,
   useBulkUpdateStatusMutation,
   useExportRequestsMutation,
+  useGetAuditLogsQuery,
+  useLazyGetAuditLogsQuery,
 } = adminApi;

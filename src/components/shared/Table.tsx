@@ -1,9 +1,12 @@
 /**
  * Table Component
- * Reusable data table with sorting, selection, and customization
+ * Modern reusable data table with sorting, selection, and glass morphism styling
  */
 
 import React from 'react';
+import { cn } from '@/lib/utils';
+import { Loader2, ArrowUp, ArrowDown, ArrowUpDown, Inbox } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export interface Column<T = Record<string, unknown>> {
   key: string;
@@ -47,20 +50,20 @@ export function Table<T extends Record<string, unknown> = Record<string, unknown
   selectedRows = [],
   onSelectionChange,
   hover = true,
-  striped = false,
-  bordered = true,
+  striped = true,
+  bordered = false,
   className = '',
 }: TableProps<T>) {
   const [localSortKey, setLocalSortKey] = React.useState<string | undefined>(sortKey);
   const [localSortDirection, setLocalSortDirection] = React.useState<'asc' | 'desc'>('asc');
-  
+
   const handleSort = (key: string) => {
     const newDirection = localSortKey === key && localSortDirection === 'asc' ? 'desc' : 'asc';
     setLocalSortKey(key);
     setLocalSortDirection(newDirection);
     onSort?.(key, newDirection);
   };
-  
+
   const handleSelectAll = (checked: boolean) => {
     if (!onSelectionChange) return;
     if (checked) {
@@ -70,7 +73,7 @@ export function Table<T extends Record<string, unknown> = Record<string, unknown
       onSelectionChange([]);
     }
   };
-  
+
   const handleSelectRow = (id: string, checked: boolean) => {
     if (!onSelectionChange) return;
     if (checked) {
@@ -79,109 +82,147 @@ export function Table<T extends Record<string, unknown> = Record<string, unknown
       onSelectionChange(selectedRows.filter((rowId) => rowId !== id));
     }
   };
-  
+
   const allSelected = data.length > 0 && selectedRows.length === data.length;
   const someSelected = selectedRows.length > 0 && selectedRows.length < data.length;
-  
-  return (
-    <div className={`table-wrapper overflow-x-auto ${className}`}>
-      <table className={`min-w-full divide-y divide-gray-200 ${bordered ? 'border border-gray-200' : ''}`}>
-        <thead className="bg-gray-50">
-          <tr>
-            {selectable && (
-              <th className="px-6 py-3 text-left w-12">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  ref={(el) => el && (el.indeterminate = someSelected)}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-              </th>
-            )}
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                className={`px-6 py-3 text-${column.align || 'left'} text-xs font-medium text-gray-500 uppercase tracking-wider ${column.sortable ? 'cursor-pointer select-none hover:bg-gray-100' : ''}`}
-                style={{ width: column.width }}
-                onClick={() => column.sortable && handleSort(column.key)}
-              >
-                <div className="flex items-center gap-2">
-                  {column.header}
-                  {column.sortable && (
-                    <span className="text-gray-400">
-                      {localSortKey === column.key ? (
-                        localSortDirection === 'asc' ? '↑' : '↓'
-                      ) : (
-                        '↕'
-                      )}
-                    </span>
-                  )}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className={`bg-white divide-y divide-gray-200 ${striped ? 'divide-y-0' : ''}`}>
-          {loading ? (
-            <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-12 text-center">
-                <div className="flex justify-center items-center">
-                  <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </div>
-              </td>
-            </tr>
-          ) : data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-12 text-center text-gray-500">
-                {emptyMessage}
-              </td>
-            </tr>
-          ) : (
-            data.map((row, rowIndex) => {
-              const rowId = String(row[keyField]);
-              const isSelected = selectedRows.includes(rowId);
 
-              return (
-                <tr
-                  key={rowId}
-                  className={`
-                    ${hover ? 'hover:bg-gray-50' : ''}
-                    ${striped && rowIndex % 2 === 1 ? 'bg-gray-50' : ''}
-                    ${onRowClick ? 'cursor-pointer' : ''}
-                    ${isSelected ? 'bg-blue-50' : ''}
-                  `}
-                  onClick={() => onRowClick?.(row, rowIndex)}
-                >
-                  {selectable && (
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={(e) => handleSelectRow(rowId, e.target.checked)}
-                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                    </td>
+  const alignClasses = {
+    left: 'text-left',
+    center: 'text-center',
+    right: 'text-right',
+  };
+
+  return (
+    <div className={cn(
+      'relative overflow-hidden rounded-xl',
+      'bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm',
+      'shadow-soft',
+      bordered && 'border border-slate-200/60 dark:border-slate-700/60',
+      className
+    )}>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-200/60 dark:divide-slate-700/60">
+          <thead>
+            <tr className="bg-slate-50/80 dark:bg-slate-900/50">
+              {selectable && (
+                <th className="px-6 py-4 text-left w-12">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={handleSelectAll}
+                    ref={(el: HTMLButtonElement | null) => {
+                      if (el) {
+                        const input = el.querySelector('input');
+                        if (input) input.indeterminate = someSelected;
+                      }
+                    }}
+                    className="border-slate-300 dark:border-slate-600"
+                  />
+                </th>
+              )}
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={cn(
+                    'px-6 py-4 text-xs font-semibold uppercase tracking-wider',
+                    'text-slate-500 dark:text-slate-400',
+                    column.sortable && 'cursor-pointer select-none hover:text-primary transition-colors',
+                    alignClasses[column.align || 'left']
                   )}
-                  {columns.map((column) => (
-                    <td
-                      key={column.key}
-                      className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-${column.align || 'left'}`}
-                    >
-                      {column.render
-                        ? column.render(row[column.key], row, rowIndex)
-                        : (row[column.key] as React.ReactNode)}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
+                  style={{ width: column.width }}
+                  onClick={() => column.sortable && handleSort(column.key)}
+                >
+                  <div className={cn(
+                    'flex items-center gap-2',
+                    column.align === 'center' && 'justify-center',
+                    column.align === 'right' && 'justify-end'
+                  )}>
+                    {column.header}
+                    {column.sortable && (
+                      <span className="text-slate-400 dark:text-slate-500">
+                        {localSortKey === column.key ? (
+                          localSortDirection === 'asc' ? (
+                            <ArrowUp className="h-4 w-4 text-primary" />
+                          ) : (
+                            <ArrowDown className="h-4 w-4 text-primary" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="h-4 w-4" />
+                        )}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-16 text-center">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <span className="text-sm text-slate-500 dark:text-slate-400">Loading data...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="px-6 py-16 text-center">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <div className="p-4 rounded-full bg-slate-100 dark:bg-slate-800">
+                      <Inbox className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                    </div>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">{emptyMessage}</span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data.map((row, rowIndex) => {
+                const rowId = String(row[keyField]);
+                const isSelected = selectedRows.includes(rowId);
+
+                return (
+                  <tr
+                    key={rowId}
+                    className={cn(
+                      'transition-colors duration-150',
+                      hover && 'hover:bg-primary/5 dark:hover:bg-primary/10',
+                      striped && rowIndex % 2 === 1 && 'bg-slate-50/50 dark:bg-slate-800/30',
+                      onRowClick && 'cursor-pointer',
+                      isSelected && 'bg-primary/10 dark:bg-primary/20'
+                    )}
+                    onClick={() => onRowClick?.(row, rowIndex)}
+                  >
+                    {selectable && (
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={(checked) => handleSelectRow(rowId, checked as boolean)}
+                          className="border-slate-300 dark:border-slate-600"
+                        />
+                      </td>
+                    )}
+                    {columns.map((column) => (
+                      <td
+                        key={column.key}
+                        className={cn(
+                          'px-6 py-4 whitespace-nowrap text-sm',
+                          'text-slate-700 dark:text-slate-300',
+                          alignClasses[column.align || 'left']
+                        )}
+                      >
+                        {column.render
+                          ? column.render(row[column.key], row, rowIndex)
+                          : (row[column.key] as React.ReactNode)}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

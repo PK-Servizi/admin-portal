@@ -1,14 +1,16 @@
 /**
  * Button Component
- * Reusable button with variants and sizes
+ * Modern reusable button with variants, gradients, and animations
  * Optimized with React.memo
  */
 
 import React from 'react';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'ghost' | 'outline' | 'gradient';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
   fullWidth?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
@@ -27,41 +29,91 @@ export const Button = React.memo<ButtonProps>(({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'btn inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
-  
+  const baseClasses = cn(
+    'inline-flex items-center justify-center font-medium rounded-xl',
+    'transition-all duration-200',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/50',
+    'disabled:opacity-60 disabled:cursor-not-allowed disabled:pointer-events-none',
+    'active:scale-[0.98]'
+  );
+
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 disabled:bg-gray-300',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300',
-    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500 disabled:bg-yellow-300',
-    info: 'bg-cyan-600 text-white hover:bg-cyan-700 focus:ring-cyan-500 disabled:bg-cyan-300',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500 disabled:text-gray-400',
+    primary: cn(
+      'bg-primary text-primary-foreground',
+      'hover:bg-primary/90',
+      'shadow-sm hover:shadow-md hover:shadow-primary/25'
+    ),
+    secondary: cn(
+      'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100',
+      'hover:bg-slate-200 dark:hover:bg-slate-700',
+      'shadow-sm'
+    ),
+    success: cn(
+      'bg-emerald-600 text-white',
+      'hover:bg-emerald-700',
+      'shadow-sm hover:shadow-md hover:shadow-emerald-500/25'
+    ),
+    danger: cn(
+      'bg-rose-600 text-white',
+      'hover:bg-rose-700',
+      'shadow-sm hover:shadow-md hover:shadow-rose-500/25'
+    ),
+    warning: cn(
+      'bg-amber-500 text-white',
+      'hover:bg-amber-600',
+      'shadow-sm hover:shadow-md hover:shadow-amber-500/25'
+    ),
+    info: cn(
+      'bg-cyan-600 text-white',
+      'hover:bg-cyan-700',
+      'shadow-sm hover:shadow-md hover:shadow-cyan-500/25'
+    ),
+    ghost: cn(
+      'bg-transparent text-slate-700 dark:text-slate-300',
+      'hover:bg-slate-100 dark:hover:bg-slate-800'
+    ),
+    outline: cn(
+      'bg-transparent border-2 border-primary text-primary',
+      'hover:bg-primary/5'
+    ),
+    gradient: cn(
+      'bg-gradient-to-r from-indigo-500 to-violet-500 text-white',
+      'hover:from-indigo-600 hover:to-violet-600',
+      'shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40'
+    ),
   };
-  
+
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-3 py-1.5 text-sm gap-1.5',
+    md: 'px-4 py-2.5 text-sm gap-2',
+    lg: 'px-6 py-3 text-base gap-2.5',
+    icon: 'p-2.5',
   };
-  
+
   const widthClass = fullWidth ? 'w-full' : '';
-  
+
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClass} ${className}`}
+      className={cn(
+        baseClasses,
+        variantClasses[variant],
+        sizeClasses[size],
+        widthClass,
+        className
+      )}
       disabled={disabled || loading}
       {...props}
     >
       {loading && (
-        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+        <Loader2 className="h-4 w-4 animate-spin" />
       )}
-      {icon && iconPosition === 'left' && !loading && <span className="mr-2">{icon}</span>}
+      {icon && iconPosition === 'left' && !loading && (
+        <span className="flex-shrink-0">{icon}</span>
+      )}
       {children}
-      {icon && iconPosition === 'right' && !loading && <span className="ml-2">{icon}</span>}
+      {icon && iconPosition === 'right' && !loading && (
+        <span className="flex-shrink-0">{icon}</span>
+      )}
     </button>
   );
 });

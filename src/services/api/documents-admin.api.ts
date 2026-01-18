@@ -20,6 +20,18 @@ export interface Document {
   reviewedAt?: string;
   notes?: string;
   uploadedAt: string;
+  createdAt?: string;
+  // Convenience aliases
+  url?: string;
+  type?: string;
+  name?: string;
+  // Populated user info
+  user?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
 }
 
 export interface ApproveDocumentData {
@@ -35,13 +47,21 @@ export interface AddNotesData {
   notes: string;
 }
 
+export interface DocumentFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  status?: string;
+}
+
 export const documentsAdminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all pending documents
-    getPendingDocuments: builder.query<ApiResponse<Document[]>, void>({
-      query: () => ({
+    getPendingDocuments: builder.query<ApiResponse<Document[]>, DocumentFilters | void>({
+      query: (filters) => ({
         url: '/documents',
-        params: { status: 'pending' },
+        params: { ...filters, status: 'pending' },
       }),
       providesTags: (result) =>
         result

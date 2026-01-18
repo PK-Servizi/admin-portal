@@ -5,19 +5,24 @@
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
+  // Backend uses fullName, but we support both for flexibility
+  fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  phoneNumber?: string; // Alias for compatibility
   fiscalCode?: string;
-  dateOfBirth?: string;
-  placeOfBirth?: string;
+  birthDate?: string;
+  dateOfBirth?: string; // Alias for compatibility
+  birthPlace?: string;
+  placeOfBirth?: string; // Alias for compatibility
   address?: string;
   city?: string;
   postalCode?: string;
   province?: string;
   country?: string;
   isActive: boolean;
-  isEmailVerified: boolean;
+  isEmailVerified?: boolean;
   avatarUrl?: string;
   role: UserRole;
   permissions?: string[];
@@ -59,9 +64,11 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
+// Backend returns accessToken and refreshToken at root level, not nested in tokens object
 export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
   user: User;
-  tokens: AuthTokens;
 }
 
 export interface ChangePasswordData {

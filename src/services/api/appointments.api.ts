@@ -29,6 +29,25 @@ export const appointmentsApi = baseApi.injectEndpoints({
       keepUnusedDataFor: 60, // Cache for 1 minute
     }),
 
+    // Admin: Get all appointments
+    getAppointments: builder.query<
+      PaginatedApiResponse<Appointment[]>,
+      { page?: number; limit?: number; status?: string; startDate?: string; endDate?: string }
+    >({
+      query: (params) => ({
+        url: '/appointments',
+        params,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: API_TAGS.Appointment, id })),
+              { type: API_TAGS.Appointment, id: 'ADMIN_LIST' },
+            ]
+          : [{ type: API_TAGS.Appointment, id: 'ADMIN_LIST' }],
+      keepUnusedDataFor: 60,
+    }),
+
     // Get my appointments
     getMyAppointments: builder.query<
       PaginatedApiResponse<Appointment[]>,
@@ -198,6 +217,8 @@ export const appointmentsApi = baseApi.injectEndpoints({
 export const {
   useGetAvailableSlotsQuery,
   useLazyGetAvailableSlotsQuery,
+  useGetAppointmentsQuery,
+  useLazyGetAppointmentsQuery,
   useGetMyAppointmentsQuery,
   useGetAppointmentQuery,
   useCreateAppointmentMutation,

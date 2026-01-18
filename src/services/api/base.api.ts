@@ -28,8 +28,8 @@ export const API_TAGS = {
 
 export type ApiTag = typeof API_TAGS[keyof typeof API_TAGS];
 
-// Get API base URL from environment
-const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3001';
+// Get API base URL from environment (should include /api/v1 prefix)
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
 /**
  * Base query with automatic token injection and refresh logic

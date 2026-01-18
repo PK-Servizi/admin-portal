@@ -17,10 +17,29 @@ import type {
 export const subscriptionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all subscription plans (public)
-    getSubscriptionPlans: builder.query<ApiResponse<SubscriptionPlan[]>, void>({
+    getSubscriptionPlans: builder.query<ApiResponse<SubscriptionPlan[]>, void | { page?: number; limit?: number }>({
       query: () => '/subscription-plans',
       providesTags: [API_TAGS.SubscriptionPlan],
       keepUnusedDataFor: 600, // Cache for 10 minutes
+    }),
+
+    // Admin: Get all subscriptions
+    getAllSubscriptions: builder.query<
+      PaginatedApiResponse<Subscription[]>,
+      { page?: number; limit?: number; search?: string; status?: string; planId?: string }
+    >({
+      query: (params) => ({
+        url: '/subscriptions',
+        params,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: API_TAGS.Subscription, id })),
+              { type: API_TAGS.Subscription, id: 'ADMIN_LIST' },
+            ]
+          : [{ type: API_TAGS.Subscription, id: 'ADMIN_LIST' }],
+      keepUnusedDataFor: 60,
     }),
 
     // Get my current subscription
@@ -62,7 +81,7 @@ export const subscriptionsApi = baseApi.injectEndpoints({
       },
     }),
 
-    // Cancel subscription
+    // Cancel subscription (user's own)
     cancelSubscription: builder.mutation<ApiResponse<Subscription>, void>({
       query: () => ({
         url: '/subscriptions/cancel',
@@ -84,6 +103,22 @@ export const subscriptionsApi = baseApi.injectEndpoints({
           patchResult.undo();
         }
       },
+    }),
+
+    // Admin: Cancel any subscription
+    adminCancelSubscription: builder.mutation<
+      ApiResponse<Subscription>,
+      { id: string; reason?: string }
+    >({
+      query: ({ id, reason }) => ({
+        url: `/subscriptions/${id}/cancel`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.Subscription, id },
+        { type: API_TAGS.Subscription, id: 'ADMIN_LIST' },
+      ],
     }),
 
     // Upgrade subscription
@@ -161,10 +196,13 @@ export const subscriptionsApi = baseApi.injectEndpoints({
 
 export const {
   useGetSubscriptionPlansQuery,
+  useGetAllSubscriptionsQuery,
+  useLazyGetAllSubscriptionsQuery,
   useGetMySubscriptionQuery,
   useGetMySubscriptionUsageQuery,
   useCreateCheckoutSessionMutation,
   useCancelSubscriptionMutation,
+  useAdminCancelSubscriptionMutation,
   useUpgradeSubscriptionMutation,
   useGetMyPaymentsQuery,
   useGetPaymentQuery,
