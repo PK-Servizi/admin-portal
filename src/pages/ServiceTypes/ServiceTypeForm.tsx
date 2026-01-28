@@ -49,11 +49,11 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Il nome è obbligatorio';
+      newErrors.name = 'Name is required';
     } else if (formData.name.length < 3) {
-      newErrors.name = 'Il nome deve contenere almeno 3 caratteri';
+      newErrors.name = 'Name must be at least 3 characters';
     } else if (formData.name.length > 100) {
-      newErrors.name = 'Il nome non può superare i 100 caratteri';
+      newErrors.name = 'Name cannot exceed 100 characters';
     }
 
     setErrors(newErrors);
@@ -110,7 +110,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {mode === 'create' ? 'Nuovo Tipo di Servizio' : 'Modifica Tipo di Servizio'}
+              {mode === 'create' ? 'New Service Type' : 'Edit Service Type'}
             </h2>
           </div>
           <button
@@ -129,7 +129,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              Nome <span className="text-red-500">*</span>
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -138,7 +138,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               value={formData.name}
               onChange={handleChange}
               onBlur={() => handleBlur('name')}
-              placeholder="es. Servizi Fiscali"
+              placeholder="e.g. Tax Services"
               className={cn(
                 'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors',
                 touched.name && errors.name
@@ -157,7 +157,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               htmlFor="code"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              Codice
+              Code
             </label>
             <input
               type="text"
@@ -165,11 +165,11 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               name="code"
               value={formData.code}
               onChange={handleChange}
-              placeholder="es. FISCAL"
+              placeholder="e.g. FISCAL"
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Codice univoco per identificare il tipo di servizio
+              Unique code to identify the service type
             </p>
           </div>
 
@@ -179,7 +179,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               htmlFor="description"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
-              Descrizione
+              Description
             </label>
             <textarea
               id="description"
@@ -187,7 +187,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              placeholder="Descrizione del tipo di servizio..."
+              placeholder="Service type description..."
               className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none"
             />
           </div>
@@ -205,7 +205,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {formData.isActive ? 'Attivo' : 'Inattivo'}
+              {formData.isActive ? 'Active' : 'Inactive'}
             </span>
           </div>
         </form>
@@ -217,7 +217,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            Annulla
+            Cancel
           </button>
           <button
             onClick={handleSubmit}
@@ -229,7 +229,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {mode === 'create' ? 'Crea' : 'Salva'}
+            {mode === 'create' ? 'Create' : 'Save'}
           </button>
         </div>
       </div>

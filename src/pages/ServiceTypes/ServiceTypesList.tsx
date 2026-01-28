@@ -214,10 +214,10 @@ export const ServiceTypesList: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <Layers className="h-7 w-7 text-indigo-500" />
-            Tipi di Servizio
+            Service Types
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Gestisci le categorie dei servizi offerti
+            Manage service categories
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ export const ServiceTypesList: React.FC = () => {
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              Elimina ({selectedIds.length})
+              Delete ({selectedIds.length})
             </button>
           )}
           <button
@@ -244,12 +244,12 @@ export const ServiceTypesList: React.FC = () => {
                 : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
             )}
           >
-            {bulkMode ? 'Annulla' : 'Selezione multipla'}
+            {bulkMode ? 'Cancel' : 'Bulk Select'}
           </button>
           <button
             onClick={() => refetch()}
             className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Aggiorna"
+            title="Refresh"
           >
             <RefreshCw className={cn('h-5 w-5', isFetching && 'animate-spin')} />
           </button>
@@ -258,7 +258,7 @@ export const ServiceTypesList: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Nuovo Tipo
+            New Type
           </button>
         </div>
       </div>
@@ -271,7 +271,7 @@ export const ServiceTypesList: React.FC = () => {
               <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Totale</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalCount}</p>
             </div>
           </div>
@@ -282,7 +282,7 @@ export const ServiceTypesList: React.FC = () => {
               <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Attivi</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeCount}</p>
             </div>
           </div>
@@ -293,7 +293,7 @@ export const ServiceTypesList: React.FC = () => {
               <XCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Inattivi</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Inactive</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{inactiveCount}</p>
             </div>
           </div>
@@ -309,7 +309,7 @@ export const ServiceTypesList: React.FC = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cerca tipo di servizio..."
+                placeholder="Search service type..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
@@ -342,7 +342,7 @@ export const ServiceTypesList: React.FC = () => {
             )}
           >
             <Filter className="h-4 w-4" />
-            Filtri
+            Filters
             {hasActiveFilters && (
               <span className="ml-1 px-1.5 py-0.5 bg-indigo-600 text-white text-xs rounded-full">
                 {[filters.search, filters.isActive !== null].filter(Boolean).length}
@@ -357,7 +357,7 @@ export const ServiceTypesList: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Stato
+                  Status
                 </label>
                 <select
                   value={filters.isActive === null ? '' : filters.isActive ? 'active' : 'inactive'}
@@ -369,14 +369,14 @@ export const ServiceTypesList: React.FC = () => {
                   }}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
-                  <option value="">Tutti gli stati</option>
-                  <option value="active">Attivo</option>
-                  <option value="inactive">Inattivo</option>
+                  <option value="">All statuses</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Ordina per
+                  Sort by
                 </label>
                 <select
                   value={`${filters.sortBy}-${filters.sortOrder}`}
@@ -386,11 +386,11 @@ export const ServiceTypesList: React.FC = () => {
                   }}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
-                  <option value="name-ASC">Nome (A-Z)</option>
-                  <option value="name-DESC">Nome (Z-A)</option>
-                  <option value="createdAt-DESC">Più recenti</option>
-                  <option value="createdAt-ASC">Meno recenti</option>
-                  <option value="updatedAt-DESC">Ultimo aggiornamento</option>
+                  <option value="name-ASC">Name (A-Z)</option>
+                  <option value="name-DESC">Name (Z-A)</option>
+                  <option value="createdAt-DESC">Most recent</option>
+                  <option value="createdAt-ASC">Oldest first</option>
+                  <option value="updatedAt-DESC">Last updated</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -398,7 +398,7 @@ export const ServiceTypesList: React.FC = () => {
                   onClick={clearFilters}
                   className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                 >
-                  Cancella filtri
+                  Clear filters
                 </button>
               </div>
             </div>
@@ -415,9 +415,9 @@ export const ServiceTypesList: React.FC = () => {
         ) : serviceTypes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
             <FolderOpen className="h-12 w-12 mb-4" />
-            <p className="text-lg font-medium">Nessun tipo di servizio trovato</p>
+            <p className="text-lg font-medium">No service types found</p>
             <p className="text-sm mt-1">
-              {hasActiveFilters ? 'Prova a modificare i filtri' : 'Crea il primo tipo di servizio'}
+              {hasActiveFilters ? 'Try adjusting the filters' : 'Create your first service type'}
             </p>
             {!hasActiveFilters && (
               <button
@@ -425,7 +425,7 @@ export const ServiceTypesList: React.FC = () => {
                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 <Plus className="h-4 w-4" />
-                Nuovo Tipo
+                New Type
               </button>
             )}
           </div>
@@ -446,16 +446,16 @@ export const ServiceTypesList: React.FC = () => {
                       </th>
                     )}
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Nome
+                      Name
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Stato
+                      Status
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Creato
+                      Created
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Aggiornato
+                      Updated
                     </th>
                     <th className="w-12 px-4 py-3"></th>
                   </tr>
@@ -508,12 +508,12 @@ export const ServiceTypesList: React.FC = () => {
                           {serviceType.isActive ? (
                             <>
                               <CheckCircle2 className="h-3 w-3" />
-                              Attivo
+                              Active
                             </>
                           ) : (
                             <>
                               <XCircle className="h-3 w-3" />
-                              Inattivo
+                              Inactive
                             </>
                           )}
                         </span>
@@ -547,7 +547,7 @@ export const ServiceTypesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <Edit className="h-4 w-4" />
-                                  Modifica
+                                  Edit
                                 </button>
                                 <button
                                   onClick={() => handleToggleActive(serviceType.id)}
@@ -557,12 +557,12 @@ export const ServiceTypesList: React.FC = () => {
                                   {serviceType.isActive ? (
                                     <>
                                       <ToggleLeft className="h-4 w-4" />
-                                      Disattiva
+                                      Deactivate
                                     </>
                                   ) : (
                                     <>
                                       <ToggleRight className="h-4 w-4" />
-                                      Attiva
+                                      Activate
                                     </>
                                   )}
                                 </button>
@@ -575,7 +575,7 @@ export const ServiceTypesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
                                 >
                                   <Trash2 className="h-4 w-4" />
-                                  Elimina
+                                  Delete
                                 </button>
                               </div>
                             </>
@@ -593,7 +593,7 @@ export const ServiceTypesList: React.FC = () => {
               <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Mostra
+                    Show
                   </span>
                   <select
                     value={pagination.pageSize}
@@ -606,7 +606,7 @@ export const ServiceTypesList: React.FC = () => {
                     <option value={100}>100</option>
                   </select>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    di {totalCount} risultati
+                    of {totalCount} results
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -618,7 +618,7 @@ export const ServiceTypesList: React.FC = () => {
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <span className="px-3 py-1 text-sm text-gray-700 dark:text-gray-200">
-                    Pagina {pagination.page} di {totalPages}
+                    Page {pagination.page} of {totalPages}
                   </span>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
@@ -666,15 +666,15 @@ export const ServiceTypesList: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Conferma eliminazione
+                  Confirm deletion
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Questa azione non può essere annullata
+                  This action cannot be undone
                 </p>
               </div>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Sei sicuro di voler eliminare il tipo di servizio{' '}
+              Are you sure you want to delete the service type{' '}
               <span className="font-semibold">{deletingServiceType.name}</span>?
             </p>
             <div className="flex justify-end gap-3">
@@ -682,7 +682,7 @@ export const ServiceTypesList: React.FC = () => {
                 onClick={() => dispatch(closeDeleteServiceTypeModal())}
                 className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                Annulla
+                Cancel
               </button>
               <button
                 onClick={handleDelete}
@@ -694,7 +694,7 @@ export const ServiceTypesList: React.FC = () => {
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-                Elimina
+                Delete
               </button>
             </div>
           </div>

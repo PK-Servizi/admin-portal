@@ -259,10 +259,10 @@ export const ServicesList: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <Briefcase className="h-7 w-7 text-indigo-500" />
-            Servizi
+            Services
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Gestisci i servizi offerti e la loro configurazione
+            Manage services and their configuration
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -277,7 +277,7 @@ export const ServicesList: React.FC = () => {
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              Elimina ({selectedIds.length})
+              Delete ({selectedIds.length})
             </button>
           )}
           <button
@@ -289,12 +289,12 @@ export const ServicesList: React.FC = () => {
                 : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
             )}
           >
-            {bulkMode ? 'Annulla' : 'Selezione multipla'}
+            {bulkMode ? 'Cancel' : 'Bulk Select'}
           </button>
           <button
             onClick={() => refetch()}
             className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Aggiorna"
+            title="Refresh"
           >
             <RefreshCw className={cn('h-5 w-5', isFetching && 'animate-spin')} />
           </button>
@@ -303,7 +303,7 @@ export const ServicesList: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Nuovo Servizio
+            New Service
           </button>
         </div>
       </div>
@@ -316,7 +316,7 @@ export const ServicesList: React.FC = () => {
               <Briefcase className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Totale Servizi</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Services</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalCount}</p>
             </div>
           </div>
@@ -327,7 +327,7 @@ export const ServicesList: React.FC = () => {
               <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Attivi</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeCount}</p>
             </div>
           </div>
@@ -338,7 +338,7 @@ export const ServicesList: React.FC = () => {
               <XCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Inattivi</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Inactive</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{inactiveCount}</p>
             </div>
           </div>
@@ -354,7 +354,7 @@ export const ServicesList: React.FC = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cerca servizio per nome o codice..."
+                placeholder="Search service by name or code..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
@@ -387,7 +387,7 @@ export const ServicesList: React.FC = () => {
             )}
           >
             <Filter className="h-4 w-4" />
-            Filtri
+            Filters
             {hasActiveFilters && (
               <span className="ml-1 px-1.5 py-0.5 bg-indigo-600 text-white text-xs rounded-full">
                 {
@@ -409,14 +409,14 @@ export const ServicesList: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Tipo di Servizio
+                  Service Type
                 </label>
                 <select
                   value={filters.serviceTypeId || ''}
                   onChange={(e) => dispatch(setServicesServiceTypeFilter(e.target.value || null))}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
-                  <option value="">Tutti i tipi</option>
+                  <option value="">All types</option>
                   {serviceTypes.map((st) => (
                     <option key={st.id} value={st.id}>
                       {st.name}
@@ -426,7 +426,7 @@ export const ServicesList: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Stato
+                  Status
                 </label>
                 <select
                   value={filters.isActive === null ? '' : filters.isActive ? 'active' : 'inactive'}
@@ -436,14 +436,14 @@ export const ServicesList: React.FC = () => {
                   }}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
-                  <option value="">Tutti gli stati</option>
-                  <option value="active">Attivo</option>
-                  <option value="inactive">Inattivo</option>
+                  <option value="">All statuses</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Ordina per
+                  Sort by
                 </label>
                 <select
                   value={`${filters.sortBy}-${filters.sortOrder}`}
@@ -456,13 +456,13 @@ export const ServicesList: React.FC = () => {
                   }}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
-                  <option value="name-ASC">Nome (A-Z)</option>
-                  <option value="name-DESC">Nome (Z-A)</option>
-                  <option value="code-ASC">Codice (A-Z)</option>
-                  <option value="basePrice-DESC">Prezzo (Alto-Basso)</option>
-                  <option value="basePrice-ASC">Prezzo (Basso-Alto)</option>
-                  <option value="createdAt-DESC">Più recenti</option>
-                  <option value="updatedAt-DESC">Ultimo aggiornamento</option>
+                  <option value="name-ASC">Name (A-Z)</option>
+                  <option value="name-DESC">Name (Z-A)</option>
+                  <option value="code-ASC">Code (A-Z)</option>
+                  <option value="basePrice-DESC">Price (High-Low)</option>
+                  <option value="basePrice-ASC">Price (Low-High)</option>
+                  <option value="createdAt-DESC">Most recent</option>
+                  <option value="updatedAt-DESC">Last updated</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -470,7 +470,7 @@ export const ServicesList: React.FC = () => {
                   onClick={clearFilters}
                   className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                 >
-                  Cancella filtri
+                  Clear filters
                 </button>
               </div>
             </div>
@@ -487,9 +487,9 @@ export const ServicesList: React.FC = () => {
         ) : services.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
             <FolderOpen className="h-12 w-12 mb-4" />
-            <p className="text-lg font-medium">Nessun servizio trovato</p>
+            <p className="text-lg font-medium">No services found</p>
             <p className="text-sm mt-1">
-              {hasActiveFilters ? 'Prova a modificare i filtri' : 'Crea il primo servizio'}
+              {hasActiveFilters ? 'Try adjusting the filters' : 'Create your first service'}
             </p>
             {!hasActiveFilters && (
               <button
@@ -497,7 +497,7 @@ export const ServicesList: React.FC = () => {
                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 <Plus className="h-4 w-4" />
-                Nuovo Servizio
+                New Service
               </button>
             )}
           </div>
@@ -518,16 +518,16 @@ export const ServicesList: React.FC = () => {
                       </th>
                     )}
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Servizio
+                      Service
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Tipo
+                      Type
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Prezzo
+                      Price
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Stato
+                      Status
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Config
@@ -591,12 +591,12 @@ export const ServicesList: React.FC = () => {
                           {service.isActive ? (
                             <>
                               <CheckCircle2 className="h-3 w-3" />
-                              Attivo
+                              Active
                             </>
                           ) : (
                             <>
                               <XCircle className="h-3 w-3" />
-                              Inattivo
+                              Inactive
                             </>
                           )}
                         </span>
@@ -618,7 +618,7 @@ export const ServicesList: React.FC = () => {
                                 ? 'text-indigo-600 hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-500/20'
                                 : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                             )}
-                            title="Schema Modulo"
+                            title="Form Schema"
                           >
                             <FileCode className="h-4 w-4" />
                           </button>
@@ -637,7 +637,7 @@ export const ServicesList: React.FC = () => {
                                 ? 'text-indigo-600 hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-500/20'
                                 : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                             )}
-                            title="Documenti Richiesti"
+                            title="Required Documents"
                           >
                             <FileText className="h-4 w-4" />
                           </button>
@@ -668,7 +668,7 @@ export const ServicesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <Edit className="h-4 w-4" />
-                                  Modifica
+                                  Edit
                                 </button>
                                 <button
                                   onClick={() => {
@@ -683,7 +683,7 @@ export const ServicesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <FileCode className="h-4 w-4" />
-                                  Modifica Schema
+                                  Edit Schema
                                 </button>
                                 <button
                                   onClick={() => {
@@ -698,7 +698,7 @@ export const ServicesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <FileText className="h-4 w-4" />
-                                  Documenti Richiesti
+                                  Required Documents
                                 </button>
                                 <button
                                   onClick={() => {
@@ -708,7 +708,7 @@ export const ServicesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <Copy className="h-4 w-4" />
-                                  Duplica
+                                  Duplicate
                                 </button>
                                 <button
                                   onClick={() => handleToggleActive(service.id)}
@@ -718,12 +718,12 @@ export const ServicesList: React.FC = () => {
                                   {service.isActive ? (
                                     <>
                                       <ToggleLeft className="h-4 w-4" />
-                                      Disattiva
+                                      Deactivate
                                     </>
                                   ) : (
                                     <>
                                       <ToggleRight className="h-4 w-4" />
-                                      Attiva
+                                      Activate
                                     </>
                                   )}
                                 </button>
@@ -736,7 +736,7 @@ export const ServicesList: React.FC = () => {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
                                 >
                                   <Trash2 className="h-4 w-4" />
-                                  Elimina
+                                  Delete
                                 </button>
                               </div>
                             </>
@@ -753,7 +753,7 @@ export const ServicesList: React.FC = () => {
             {totalPages > 1 && (
               <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Mostra</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Show</span>
                   <select
                     value={pagination.pageSize}
                     onChange={(e) => dispatch(setServicesPageSize(Number(e.target.value)))}
@@ -765,7 +765,7 @@ export const ServicesList: React.FC = () => {
                     <option value={100}>100</option>
                   </select>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    di {totalCount} risultati
+                    of {totalCount} results
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -777,7 +777,7 @@ export const ServicesList: React.FC = () => {
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <span className="px-3 py-1 text-sm text-gray-700 dark:text-gray-200">
-                    Pagina {pagination.page} di {totalPages}
+                    Page {pagination.page} of {totalPages}
                   </span>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
@@ -848,15 +848,15 @@ export const ServicesList: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Conferma eliminazione
+                  Confirm deletion
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Questa azione non può essere annullata
+                  This action cannot be undone
                 </p>
               </div>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Sei sicuro di voler eliminare il servizio{' '}
+              Are you sure you want to delete the service{' '}
               <span className="font-semibold">{deletingService.name}</span>?
             </p>
             <div className="flex justify-end gap-3">
@@ -864,7 +864,7 @@ export const ServicesList: React.FC = () => {
                 onClick={() => dispatch(closeDeleteServiceModal())}
                 className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                Annulla
+                Cancel
               </button>
               <button
                 onClick={handleDelete}
@@ -876,7 +876,7 @@ export const ServicesList: React.FC = () => {
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-                Elimina
+                Delete
               </button>
             </div>
           </div>
@@ -897,15 +897,15 @@ export const ServicesList: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Duplica servizio
+                  Duplicate service
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Verrà creata una copia del servizio selezionato
+                  A copy of the selected service will be created
                 </p>
               </div>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Vuoi duplicare il servizio{' '}
+              Do you want to duplicate the service{' '}
               <span className="font-semibold">{duplicatingService.name}</span>?
             </p>
             <div className="flex justify-end gap-3">
@@ -913,7 +913,7 @@ export const ServicesList: React.FC = () => {
                 onClick={() => dispatch(closeDuplicateServiceModal())}
                 className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                Annulla
+                Cancel
               </button>
               <button
                 onClick={handleDuplicate}
@@ -925,7 +925,7 @@ export const ServicesList: React.FC = () => {
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                Duplica
+                Duplicate
               </button>
             </div>
           </div>

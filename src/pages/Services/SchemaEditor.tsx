@@ -32,16 +32,16 @@ const DEFAULT_SCHEMA: FormSchema = {
   sections: [
     {
       id: 'section-1',
-      title: 'Informazioni Personali',
-      description: 'Inserisci i tuoi dati personali',
+      title: 'Personal Information',
+      description: 'Enter your personal details',
       order: 1,
       fields: [
         {
           id: 'field-1',
           name: 'firstName',
           type: 'text',
-          label: 'Nome',
-          placeholder: 'Inserisci il tuo nome',
+          label: 'First Name',
+          placeholder: 'Enter your first name',
           validation: { required: true, minLength: 2, maxLength: 50 },
           width: 'half',
           order: 1,
@@ -50,8 +50,8 @@ const DEFAULT_SCHEMA: FormSchema = {
           id: 'field-2',
           name: 'lastName',
           type: 'text',
-          label: 'Cognome',
-          placeholder: 'Inserisci il tuo cognome',
+          label: 'Last Name',
+          placeholder: 'Enter your last name',
           validation: { required: true, minLength: 2, maxLength: 50 },
           width: 'half',
           order: 2,
@@ -62,7 +62,7 @@ const DEFAULT_SCHEMA: FormSchema = {
   settings: {
     showProgressBar: true,
     allowSaveDraft: true,
-    submitButtonText: 'Invia Richiesta',
+    submitButtonText: 'Submit Request',
   },
 };
 
@@ -89,33 +89,33 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
 
       // Basic structure validation
       if (!parsed.version) {
-        validationErrors.push('Campo "version" mancante');
+        validationErrors.push('Missing "version" field');
       }
       if (!Array.isArray(parsed.sections)) {
-        validationErrors.push('Campo "sections" deve essere un array');
+        validationErrors.push('"sections" field must be an array');
       } else {
         parsed.sections.forEach((section, sIndex) => {
           if (!section.id) {
-            validationErrors.push(`Sezione ${sIndex + 1}: campo "id" mancante`);
+            validationErrors.push(`Section ${sIndex + 1}: missing "id" field`);
           }
           if (!section.title) {
-            validationErrors.push(`Sezione ${sIndex + 1}: campo "title" mancante`);
+            validationErrors.push(`Section ${sIndex + 1}: missing "title" field`);
           }
           if (!Array.isArray(section.fields)) {
-            validationErrors.push(`Sezione ${sIndex + 1}: campo "fields" deve essere un array`);
+            validationErrors.push(`Section ${sIndex + 1}: "fields" must be an array`);
           } else {
             section.fields.forEach((field, fIndex) => {
               if (!field.id) {
-                validationErrors.push(`Sezione ${sIndex + 1}, Campo ${fIndex + 1}: "id" mancante`);
+                validationErrors.push(`Section ${sIndex + 1}, Field ${fIndex + 1}: missing "id"`);
               }
               if (!field.name) {
-                validationErrors.push(`Sezione ${sIndex + 1}, Campo ${fIndex + 1}: "name" mancante`);
+                validationErrors.push(`Section ${sIndex + 1}, Field ${fIndex + 1}: missing "name"`);
               }
               if (!field.type) {
-                validationErrors.push(`Sezione ${sIndex + 1}, Campo ${fIndex + 1}: "type" mancante`);
+                validationErrors.push(`Section ${sIndex + 1}, Field ${fIndex + 1}: missing "type"`);
               }
               if (!field.label) {
-                validationErrors.push(`Sezione ${sIndex + 1}, Campo ${fIndex + 1}: "label" mancante`);
+                validationErrors.push(`Section ${sIndex + 1}, Field ${fIndex + 1}: missing "label"`);
               }
             });
           }
@@ -130,7 +130,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
     } catch (e) {
       return {
         valid: false,
-        errors: [`JSON non valido: ${(e as Error).message}`],
+        errors: [`Invalid JSON: ${(e as Error).message}`],
       };
     }
   }, []);
@@ -162,7 +162,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
       onClose();
     } catch (error) {
       console.error('Failed to save schema:', error);
-      setErrors(['Errore durante il salvataggio dello schema']);
+      setErrors(['Error saving schema']);
     }
   };
 
@@ -178,7 +178,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
 
   // Handle reset
   const handleReset = () => {
-    if (window.confirm('Sei sicuro di voler ripristinare lo schema iniziale? Le modifiche non salvate andranno perse.')) {
+    if (window.confirm('Are you sure you want to restore the initial schema? Unsaved changes will be lost.')) {
       setSchemaText(JSON.stringify(initialSchema || DEFAULT_SCHEMA, null, 2));
       setErrors([]);
       setIsDirty(false);
@@ -196,7 +196,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
 
   // Load template
   const handleLoadTemplate = () => {
-    if (isDirty && !window.confirm('Sei sicuro di voler caricare il template? Le modifiche non salvate andranno perse.')) {
+    if (isDirty && !window.confirm('Are you sure you want to load the template? Unsaved changes will be lost.')) {
       return;
     }
     setSchemaText(JSON.stringify(DEFAULT_SCHEMA, null, 2));
@@ -221,17 +221,17 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Schema Modulo
+                Form Schema
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Configura i campi del modulo per questo servizio
+                Configure the form fields for this service
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {isDirty && (
               <span className="text-sm text-amber-600 dark:text-amber-400">
-                Modifiche non salvate
+                Unsaved changes
               </span>
             )}
             <button
@@ -251,40 +251,40 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <FileCode className="h-4 w-4" />
-              Formatta
+              Format
             </button>
             <button
               onClick={handleCopy}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Copy className="h-4 w-4" />
-              Copia
+              Copy
             </button>
             <button
               onClick={handleReset}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <RotateCcw className="h-4 w-4" />
-              Ripristina
+              Reset
             </button>
             <button
               onClick={handleLoadTemplate}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Info className="h-4 w-4" />
-              Carica Template
+              Load Template
             </button>
           </div>
           <div className="flex items-center gap-2">
             {hasErrors ? (
               <span className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
                 <AlertCircle className="h-4 w-4" />
-                {errors.length} errori
+                {errors.length} errors
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
                 <CheckCircle2 className="h-4 w-4" />
-                JSON valido
+                Valid JSON
               </span>
             )}
           </div>
@@ -314,7 +314,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
               <div className="p-4">
                 <h3 className="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400 mb-3">
                   <AlertCircle className="h-4 w-4" />
-                  Errori di Validazione
+                  Validation Errors
                 </h3>
                 <ul className="space-y-2">
                   {errors.map((error, index) => (
@@ -334,7 +334,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Utilizza il formato JSON per definire la struttura del modulo
+            Use JSON format to define the form structure
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -342,7 +342,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
               onClick={onClose}
               className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              Annulla
+              Cancel
             </button>
             <button
               onClick={handleSave}
@@ -354,7 +354,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              Salva Schema
+              Save Schema
             </button>
           </div>
         </div>

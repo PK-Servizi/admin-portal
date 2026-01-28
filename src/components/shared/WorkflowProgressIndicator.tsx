@@ -37,32 +37,32 @@ const WORKFLOW_STEPS: StepConfig[] = [
   {
     step: WorkflowStep.PAYMENT,
     icon: CreditCard,
-    label: 'Pagamento',
-    description: 'In attesa del pagamento',
+    label: 'Payment',
+    description: 'Awaiting payment',
   },
   {
     step: WorkflowStep.QUESTIONNAIRE,
     icon: FileText,
-    label: 'Questionario',
-    description: 'Compilazione del modulo',
+    label: 'Questionnaire',
+    description: 'Form completion',
   },
   {
     step: WorkflowStep.DOCUMENTS,
     icon: FolderOpen,
-    label: 'Documenti',
-    description: 'Caricamento documenti',
+    label: 'Documents',
+    description: 'Document upload',
   },
   {
     step: WorkflowStep.REVIEW,
     icon: Search,
-    label: 'Revisione',
-    description: 'In revisione da parte dello staff',
+    label: 'Review',
+    description: 'Under staff review',
   },
   {
     step: WorkflowStep.COMPLETED,
     icon: Flag,
-    label: 'Completato',
-    description: 'Richiesta completata',
+    label: 'Completed',
+    description: 'Request completed',
   },
 ];
 
@@ -104,7 +104,7 @@ export const WorkflowProgressIndicator: React.FC<WorkflowProgressIndicatorProps>
       <div className={cn('flex items-center gap-2', className)}>
         <Clock className="h-4 w-4 text-gray-400" />
         <span className="text-sm text-gray-500 dark:text-gray-400">
-          Bozza - Non ancora inviata
+          Draft - Not yet submitted
         </span>
       </div>
     );
@@ -117,7 +117,7 @@ export const WorkflowProgressIndicator: React.FC<WorkflowProgressIndicatorProps>
       <div className={cn('flex items-center gap-2', className)}>
         <AlertCircle className={cn('h-4 w-4', statusConfig?.textClass || 'text-gray-500')} />
         <span className={cn('text-sm', statusConfig?.textClass || 'text-gray-500')}>
-          {statusConfig?.label || 'Chiusa'}
+          {statusConfig?.label || 'Closed'}
         </span>
       </div>
     );
@@ -228,7 +228,7 @@ export const WorkflowProgressIndicator: React.FC<WorkflowProgressIndicatorProps>
       {/* Current Status Text */}
       <div className="mt-4 text-center">
         <span className="text-sm text-gray-600 dark:text-gray-400">
-          Stato attuale:{' '}
+          Current status:{' '}
           <span className={cn('font-medium', STATUS_CONFIG[status]?.textClass)}>
             {STATUS_CONFIG[status]?.label || status}
           </span>

@@ -62,13 +62,13 @@ const menuItems: MenuItem[] = [
   },
   {
     key: 'service-types',
-    label: 'Tipi di Servizio',
+    label: 'Service Types',
     icon: <Layers className="h-5 w-5" />,
     path: '/service-types',
   },
   {
     key: 'services',
-    label: 'Servizi',
+    label: 'Services',
     icon: <Briefcase className="h-5 w-5" />,
     path: '/services',
   },

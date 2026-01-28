@@ -32,16 +32,16 @@ interface DocumentRequirementsEditorProps {
 }
 
 const DOCUMENT_TYPE_OPTIONS = [
-  { value: 'identity', label: 'Documento di Identità' },
-  { value: 'fiscal_code', label: 'Codice Fiscale' },
-  { value: 'residence', label: 'Certificato di Residenza' },
-  { value: 'income', label: 'Dichiarazione dei Redditi' },
-  { value: 'property', label: 'Documentazione Immobiliare' },
-  { value: 'vehicle', label: 'Documentazione Veicolo' },
-  { value: 'medical', label: 'Documentazione Medica' },
-  { value: 'education', label: 'Titoli di Studio' },
-  { value: 'work', label: 'Documentazione Lavorativa' },
-  { value: 'other', label: 'Altro' },
+  { value: 'identity', label: 'Identity Document' },
+  { value: 'fiscal_code', label: 'Tax ID / Fiscal Code' },
+  { value: 'residence', label: 'Certificate of Residence' },
+  { value: 'income', label: 'Income Declaration' },
+  { value: 'property', label: 'Property Documentation' },
+  { value: 'vehicle', label: 'Vehicle Documentation' },
+  { value: 'medical', label: 'Medical Documentation' },
+  { value: 'education', label: 'Education Certificates' },
+  { value: 'work', label: 'Employment Documentation' },
+  { value: 'other', label: 'Other' },
 ];
 
 const ACCEPTED_FORMATS = [
@@ -67,8 +67,8 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
       : [
           {
             id: generateId(),
-            name: 'Documento di Identità',
-            description: 'Carta di identità o passaporto in corso di validità',
+            name: 'Identity Document',
+            description: 'Valid ID card or passport',
             type: 'identity',
             required: true,
             acceptedFormats: ['application/pdf', 'image/jpeg', 'image/png'],
@@ -191,13 +191,13 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
       const reqErrors: string[] = [];
 
       if (!req.name.trim()) {
-        reqErrors.push('Il nome è obbligatorio');
+        reqErrors.push('Name is required');
       }
       if (!req.acceptedFormats || req.acceptedFormats.length === 0) {
-        reqErrors.push('Seleziona almeno un formato accettato');
+        reqErrors.push('Select at least one accepted format');
       }
       if (!req.maxFileSize || req.maxFileSize <= 0) {
-        reqErrors.push('La dimensione massima deve essere maggiore di 0');
+        reqErrors.push('Maximum size must be greater than 0');
       }
 
       if (reqErrors.length > 0) {
@@ -252,17 +252,17 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Documenti Richiesti
+                Required Documents
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Configura i documenti necessari per questo servizio
+                Configure the documents required for this service
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {isDirty && (
               <span className="text-sm text-amber-600 dark:text-amber-400">
-                Modifiche non salvate
+                Unsaved changes
               </span>
             )}
             <button
@@ -306,11 +306,11 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                           <FileWarning className="h-4 w-4 text-amber-500" />
                         )}
                         <span className="font-medium text-gray-900 dark:text-white truncate">
-                          {requirement.name || 'Nuovo Documento'}
+                          {requirement.name || 'New Document'}
                         </span>
                         {requirement.required && (
                           <span className="text-xs px-2 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-full">
-                            Obbligatorio
+                            Required
                           </span>
                         )}
                       </div>
@@ -378,7 +378,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                         {/* Name */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Nome Documento *
+                            Document Name *
                           </label>
                           <input
                             type="text"
@@ -387,14 +387,14 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                               handleUpdate(requirement.id, { name: e.target.value })
                             }
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            placeholder="Es. Documento di Identità"
+                            placeholder="E.g. Identity Document"
                           />
                         </div>
 
                         {/* Description */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Descrizione
+                            Description
                           </label>
                           <textarea
                             value={requirement.description || ''}
@@ -403,7 +403,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                             }
                             rows={2}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                            placeholder="Descrizione del documento richiesto"
+                            placeholder="Description of the required document"
                           />
                         </div>
 
@@ -411,7 +411,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Tipo Documento
+                              Document Type
                             </label>
                             <select
                               value={requirement.type}
@@ -429,7 +429,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                              Obbligatorio
+                              Required
                             </label>
                             <button
                               type="button"
@@ -443,7 +443,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                                   : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400'
                               )}
                             >
-                              {requirement.required ? 'Sì' : 'No'}
+                              {requirement.required ? 'Yes' : 'No'}
                             </button>
                           </div>
                         </div>
@@ -451,7 +451,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                         {/* File Size */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Dimensione Massima File
+                            Maximum File Size
                           </label>
                           <div className="flex items-center gap-3">
                             <input
@@ -475,7 +475,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                         {/* Accepted Formats */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Formati Accettati *
+                            Accepted Formats *
                           </label>
                           <div className="flex flex-wrap gap-2">
                             {ACCEPTED_FORMATS.map((format) => (
@@ -511,15 +511,15 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
             className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <Plus className="h-5 w-5" />
-            Aggiungi Documento
+            Add Document
           </button>
 
           {/* Info */}
           <div className="mt-4 flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
             <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-blue-700 dark:text-blue-400">
-              I documenti obbligatori devono essere caricati prima che la richiesta di servizio possa essere completata.
-              L'ordine dei documenti definisce come verranno visualizzati al cliente.
+              Required documents must be uploaded before the service request can be completed.
+              The document order defines how they will be displayed to the customer.
             </p>
           </div>
         </div>
@@ -527,7 +527,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {requirements.length} documenti configurati
+            {requirements.length} documents configured
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -535,7 +535,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
               onClick={onClose}
               className="px-4 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              Annulla
+              Cancel
             </button>
             <button
               onClick={handleSave}
@@ -547,7 +547,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
               ) : (
                 <Save className="h-4 w-4" />
               )}
-              Salva Documenti
+              Save Documents
             </button>
           </div>
         </div>
