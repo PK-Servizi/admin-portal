@@ -23,6 +23,8 @@ import {
   selectServicesBulkMode,
   selectSchemaEditor,
   selectDocumentRequirementsEditor,
+  selectQuestionnaireEditor,
+  selectFAQEditor,
   openCreateServiceModal,
   closeCreateServiceModal,
   openEditServiceModal,
@@ -35,6 +37,10 @@ import {
   closeSchemaEditor,
   openDocumentRequirementsEditor,
   closeDocumentRequirementsEditor,
+  openQuestionnaireEditor,
+  closeQuestionnaireEditor,
+  openFAQEditor,
+  closeFAQEditor,
   setServicesSearch,
   setServicesServiceTypeFilter,
   setServicesActiveFilter,
@@ -52,6 +58,8 @@ import { formatCurrency } from '@/utils/helpers';
 import { ServiceForm } from './ServiceForm';
 import { SchemaEditor } from './SchemaEditor';
 import { DocumentRequirementsEditor } from './DocumentRequirementsEditor';
+import { QuestionnaireEditor } from './QuestionnaireEditor';
+import { FAQEditor } from './FAQEditor';
 import type { CreateServiceData, UpdateServiceData } from '@/types';
 import {
   Plus,
@@ -75,6 +83,8 @@ import {
   Copy,
   FileText,
   Briefcase,
+  ClipboardList,
+  HelpCircle,
 } from 'lucide-react';
 
 export const ServicesList: React.FC = () => {
@@ -88,6 +98,8 @@ export const ServicesList: React.FC = () => {
   const bulkMode = useAppSelector(selectServicesBulkMode);
   const schemaEditor = useAppSelector(selectSchemaEditor);
   const docRequirementsEditor = useAppSelector(selectDocumentRequirementsEditor);
+  const questionnaireEditor = useAppSelector(selectQuestionnaireEditor);
+  const faqEditor = useAppSelector(selectFAQEditor);
 
   // Local state
   const [searchInput, setSearchInput] = useState(filters.search);
@@ -641,6 +653,40 @@ export const ServicesList: React.FC = () => {
                           >
                             <FileText className="h-4 w-4" />
                           </button>
+                          <button
+                            onClick={() =>
+                              dispatch(
+                                openQuestionnaireEditor({
+                                  serviceId: service.id,
+                                  serviceName: service.name,
+                                  schema: service.formSchema || null,
+                                })
+                              )
+                            }
+                            className={cn(
+                              'p-1.5 rounded-lg transition-colors',
+                              service.formSchema
+                                ? 'text-purple-600 hover:bg-purple-100 dark:text-purple-400 dark:hover:bg-purple-500/20'
+                                : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            )}
+                            title="Questionnaire"
+                          >
+                            <ClipboardList className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              dispatch(
+                                openFAQEditor({
+                                  serviceId: service.id,
+                                  serviceName: service.name,
+                                })
+                              )
+                            }
+                            className="p-1.5 rounded-lg transition-colors text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-500/20"
+                            title="FAQs"
+                          >
+                            <HelpCircle className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -699,6 +745,37 @@ export const ServicesList: React.FC = () => {
                                 >
                                   <FileText className="h-4 w-4" />
                                   Required Documents
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    dispatch(
+                                      openQuestionnaireEditor({
+                                        serviceId: service.id,
+                                        serviceName: service.name,
+                                        schema: service.formSchema || null,
+                                      })
+                                    );
+                                    setOpenDropdown(null);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                  <ClipboardList className="h-4 w-4" />
+                                  Edit Questionnaire
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    dispatch(
+                                      openFAQEditor({
+                                        serviceId: service.id,
+                                        serviceName: service.name,
+                                      })
+                                    );
+                                    setOpenDropdown(null);
+                                  }}
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                  <HelpCircle className="h-4 w-4" />
+                                  Manage FAQs
                                 </button>
                                 <button
                                   onClick={() => {
@@ -831,6 +908,25 @@ export const ServicesList: React.FC = () => {
           serviceId={docRequirementsEditor.serviceId!}
           initialRequirements={docRequirementsEditor.currentRequirements}
           onClose={() => dispatch(closeDocumentRequirementsEditor())}
+        />
+      )}
+
+      {/* Questionnaire Editor */}
+      {questionnaireEditor.isOpen && (
+        <QuestionnaireEditor
+          serviceId={questionnaireEditor.serviceId!}
+          serviceName={questionnaireEditor.serviceName}
+          initialSchema={questionnaireEditor.currentSchema}
+          onClose={() => dispatch(closeQuestionnaireEditor())}
+        />
+      )}
+
+      {/* FAQ Editor */}
+      {faqEditor.isOpen && (
+        <FAQEditor
+          serviceId={faqEditor.serviceId!}
+          serviceName={faqEditor.serviceName}
+          onClose={() => dispatch(closeFAQEditor())}
         />
       )}
 

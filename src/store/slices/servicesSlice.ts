@@ -33,6 +33,19 @@ interface DocumentRequirementsEditorState {
   isDirty: boolean;
 }
 
+interface QuestionnaireEditorState {
+  isOpen: boolean;
+  serviceId: string | null;
+  serviceName: string;
+  currentSchema: FormSchema | null;
+}
+
+interface FAQEditorState {
+  isOpen: boolean;
+  serviceId: string | null;
+  serviceName: string;
+}
+
 interface ServicesState {
   // View state
   viewMode: ServicesViewMode;
@@ -56,6 +69,12 @@ interface ServicesState {
   
   // Document requirements editor state
   documentRequirementsEditor: DocumentRequirementsEditorState;
+  
+  // Questionnaire editor state
+  questionnaireEditor: QuestionnaireEditorState;
+  
+  // FAQ editor state
+  faqEditor: FAQEditorState;
   
   // Filters
   filters: ServicesFilters;
@@ -92,6 +111,17 @@ const initialState: ServicesState = {
     serviceId: null,
     currentRequirements: [],
     isDirty: false,
+  },
+  questionnaireEditor: {
+    isOpen: false,
+    serviceId: null,
+    serviceName: '',
+    currentSchema: null,
+  },
+  faqEditor: {
+    isOpen: false,
+    serviceId: null,
+    serviceName: '',
   },
   filters: {
     search: '',
@@ -253,6 +283,34 @@ const servicesSlice = createSlice({
       state.documentRequirementsEditor.isDirty = false;
     },
 
+    // Questionnaire Editor
+    openQuestionnaireEditor: (state, action: PayloadAction<{ serviceId: string; serviceName: string; schema: FormSchema | null }>) => {
+      state.questionnaireEditor.isOpen = true;
+      state.questionnaireEditor.serviceId = action.payload.serviceId;
+      state.questionnaireEditor.serviceName = action.payload.serviceName;
+      state.questionnaireEditor.currentSchema = action.payload.schema;
+    },
+
+    closeQuestionnaireEditor: (state) => {
+      state.questionnaireEditor.isOpen = false;
+      state.questionnaireEditor.serviceId = null;
+      state.questionnaireEditor.serviceName = '';
+      state.questionnaireEditor.currentSchema = null;
+    },
+
+    // FAQ Editor
+    openFAQEditor: (state, action: PayloadAction<{ serviceId: string; serviceName: string }>) => {
+      state.faqEditor.isOpen = true;
+      state.faqEditor.serviceId = action.payload.serviceId;
+      state.faqEditor.serviceName = action.payload.serviceName;
+    },
+
+    closeFAQEditor: (state) => {
+      state.faqEditor.isOpen = false;
+      state.faqEditor.serviceId = null;
+      state.faqEditor.serviceName = '';
+    },
+
     // Filters
     setServicesFilters: (state, action: PayloadAction<Partial<ServicesFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
@@ -345,6 +403,10 @@ export const {
   addDocumentRequirement,
   removeDocumentRequirement,
   markDocumentRequirementsAsSaved,
+  openQuestionnaireEditor,
+  closeQuestionnaireEditor,
+  openFAQEditor,
+  closeFAQEditor,
   setServicesFilters,
   setServicesSearch,
   setServicesServiceTypeFilter,
@@ -377,6 +439,8 @@ export const selectServicesModals = (state: { services: ServicesState }) => ({
 });
 export const selectSchemaEditor = (state: { services: ServicesState }) => state.services.schemaEditor;
 export const selectDocumentRequirementsEditor = (state: { services: ServicesState }) => state.services.documentRequirementsEditor;
+export const selectQuestionnaireEditor = (state: { services: ServicesState }) => state.services.questionnaireEditor;
+export const selectFAQEditor = (state: { services: ServicesState }) => state.services.faqEditor;
 export const selectServicesFilters = (state: { services: ServicesState }) => state.services.filters;
 export const selectServicesPagination = (state: { services: ServicesState }) => ({
   page: state.services.page,

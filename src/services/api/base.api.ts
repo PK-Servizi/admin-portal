@@ -25,6 +25,7 @@ export const API_TAGS = {
   Report: 'Report',
   Role: 'Role',
   Permission: 'Permission',
+  FAQ: 'FAQ',
 } as const;
 
 export type ApiTag = typeof API_TAGS[keyof typeof API_TAGS];

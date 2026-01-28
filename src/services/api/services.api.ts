@@ -164,7 +164,7 @@ export const servicesApi = baseApi.injectEndpoints({
       query: ({ id, documentRequirements }) => ({
         url: `/services/${id}/document-requirements`,
         method: 'PUT',
-        body: { documentRequirements },
+        body: documentRequirements,
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Service' as const, id },
