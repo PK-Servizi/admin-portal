@@ -491,4 +491,3 @@ export const getWorkflowProgress = (requestOrStatus: ServiceRequest | BackendSer
     progressPercentage,
   };
 };
-
