@@ -10,6 +10,8 @@ import authReducer from './slices/authSlice';
 import uiReducer from './slices/uiSlice';
 import filtersReducer from './slices/filtersSlice';
 import adminReducer from './slices/adminSlice';
+import serviceTypesReducer from './slices/serviceTypesSlice';
+import servicesReducer from './slices/servicesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +23,8 @@ export const store = configureStore({
     ui: uiReducer,
     filters: filtersReducer,
     admin: adminReducer,
+    serviceTypes: serviceTypesReducer,
+    services: servicesReducer,
   },
   
   // Add RTK Query middleware

@@ -21,6 +21,8 @@ const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m
 const UsersList = lazy(() => import('./pages/Users').then(m => ({ default: m.UsersList })));
 const UserDetail = lazy(() => import('./pages/Users').then(m => ({ default: m.UserDetail })));
 const UserForm = lazy(() => import('./pages/Users').then(m => ({ default: m.UserForm })));
+const ServiceTypesList = lazy(() => import('./pages/ServiceTypes').then(m => ({ default: m.ServiceTypesList })));
+const ServicesList = lazy(() => import('./pages/Services').then(m => ({ default: m.ServicesList })));
 const ServiceRequestsList = lazy(() => import('./pages/ServiceRequests').then(m => ({ default: m.ServiceRequestsListPage })));
 const ServiceRequestDetail = lazy(() => import('./pages/ServiceRequests').then(m => ({ default: m.ServiceRequestDetail })));
 const AppointmentsPage = lazy(() => import('./pages/Appointments').then(m => ({ default: m.AppointmentsPage })));
@@ -165,6 +167,12 @@ function App() {
                     <Route path="/users/new" element={<UserForm />} />
                     <Route path="/users/:id" element={<UserDetail />} />
                     <Route path="/users/:id/edit" element={<UserForm />} />
+
+                    {/* Service Types Management */}
+                    <Route path="/service-types" element={<ServiceTypesList />} />
+
+                    {/* Services Management */}
+                    <Route path="/services" element={<ServicesList />} />
 
                     {/* Service Requests */}
                     <Route path="/service-requests" element={<ServiceRequestsList />} />

@@ -9,6 +9,12 @@ export { Dashboard } from './Dashboard';
 // Users
 export { UsersList, UserDetail, UserForm } from './Users';
 
+// Service Types
+export { ServiceTypesList, ServiceTypeForm } from './ServiceTypes';
+
+// Services
+export { ServicesList, ServiceForm, SchemaEditor, DocumentRequirementsEditor } from './Services';
+
 // Service Requests
 export { ServiceRequestsListPage as ServiceRequestsList, ServiceRequestDetail } from './ServiceRequests';
 

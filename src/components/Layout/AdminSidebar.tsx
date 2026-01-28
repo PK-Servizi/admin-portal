@@ -34,6 +34,8 @@ import {
   History,
   HelpCircle,
   Sparkles,
+  Layers,
+  Briefcase,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -57,6 +59,18 @@ const menuItems: MenuItem[] = [
     label: 'Users',
     icon: <Users className="h-5 w-5" />,
     path: '/users',
+  },
+  {
+    key: 'service-types',
+    label: 'Tipi di Servizio',
+    icon: <Layers className="h-5 w-5" />,
+    path: '/service-types',
+  },
+  {
+    key: 'services',
+    label: 'Servizi',
+    icon: <Briefcase className="h-5 w-5" />,
+    path: '/services',
   },
   {
     key: 'service-requests',

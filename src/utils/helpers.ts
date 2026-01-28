@@ -405,3 +405,121 @@ export const clamp = (value: number, min: number, max: number): number => {
 export const roundTo = (value: number, decimals: number): number => {
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
 };
+
+// ============================================================================
+// Service Request Status Mapping Utilities
+// ============================================================================
+
+import { STATUS_CONFIG, PRIORITY_CONFIG, type StatusConfig } from '@/types/service-request.types';
+
+/**
+ * Get status display configuration
+ */
+export const getStatusConfig = (status: string): StatusConfig => {
+  return STATUS_CONFIG[status] || {
+    label: status,
+    color: 'gray',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-700',
+  };
+};
+
+/**
+ * Get priority display configuration
+ */
+export const getPriorityConfig = (priority: string): StatusConfig => {
+  return PRIORITY_CONFIG[priority] || {
+    label: priority,
+    color: 'gray',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-600',
+  };
+};
+
+/**
+ * Get status badge class
+ */
+export const getStatusBadgeClass = (status: string): string => {
+  const config = getStatusConfig(status);
+  return `${config.bgColor} ${config.textColor}`;
+};
+
+/**
+ * Get priority badge class
+ */
+export const getPriorityBadgeClass = (priority: string): string => {
+  const config = getPriorityConfig(priority);
+  return `${config.bgColor} ${config.textColor}`;
+};
+
+/**
+ * All available statuses for filters/dropdowns
+ */
+export const ALL_STATUSES = [
+  'draft',
+  'submitted',
+  'payment_pending',
+  'awaiting_form',
+  'awaiting_documents',
+  'in_review',
+  'missing_documents',
+  'completed',
+  'closed',
+  'rejected',
+];
+
+/**
+ * All available priorities for filters/dropdowns
+ */
+export const ALL_PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+
+/**
+ * Statuses that indicate the request is active/pending
+ */
+export const ACTIVE_STATUSES = [
+  'draft',
+  'submitted',
+  'payment_pending',
+  'awaiting_form',
+  'awaiting_documents',
+  'in_review',
+  'missing_documents',
+];
+
+/**
+ * Statuses that indicate the request is closed/completed
+ */
+export const CLOSED_STATUSES = ['completed', 'closed', 'rejected'];
+
+/**
+ * Check if status is active
+ */
+export const isActiveStatus = (status: string): boolean => {
+  return ACTIVE_STATUSES.includes(status);
+};
+
+/**
+ * Check if status is closed
+ */
+export const isClosedStatus = (status: string): boolean => {
+  return CLOSED_STATUSES.includes(status);
+};
+
+/**
+ * Get allowed next statuses based on current status (state machine)
+ */
+export const getAllowedNextStatuses = (currentStatus: string): string[] => {
+  const transitions: Record<string, string[]> = {
+    draft: ['submitted', 'closed'],
+    submitted: ['in_review', 'payment_pending', 'rejected', 'closed'],
+    payment_pending: ['awaiting_form', 'awaiting_documents', 'in_review', 'closed'],
+    awaiting_form: ['awaiting_documents', 'in_review', 'closed'],
+    awaiting_documents: ['in_review', 'missing_documents', 'closed'],
+    in_review: ['completed', 'missing_documents', 'rejected', 'closed'],
+    missing_documents: ['awaiting_documents', 'in_review', 'rejected', 'closed'],
+    completed: ['closed'],
+    closed: [],
+    rejected: ['closed'],
+  };
+  return transitions[currentStatus] || [];
+};

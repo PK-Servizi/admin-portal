@@ -13,6 +13,7 @@ export const API_TAGS = {
   User: 'User',
   ServiceRequest: 'ServiceRequest',
   ServiceType: 'ServiceType',
+  Service: 'Service',
   Document: 'Document',
   Appointment: 'Appointment',
   Subscription: 'Subscription',
