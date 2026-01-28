@@ -43,7 +43,7 @@ export interface UpdateFAQData {
 }
 
 export interface FAQFilters {
-  serviceId?: string;
+  serviceTypeId?: string;
   category?: string;
   isActive?: string;
 }
@@ -70,7 +70,7 @@ export const faqsApi = baseApi.injectEndpoints({
     getFAQsByService: builder.query<PaginatedApiResponse<FAQ[]>, string>({
       query: (serviceId) => ({
         url: '/faqs',
-        params: { serviceId },
+        params: { serviceTypeId: serviceId },
       }),
       providesTags: (result, _error, serviceId) =>
         result
