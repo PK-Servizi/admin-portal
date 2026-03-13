@@ -204,7 +204,7 @@ export const subscriptionsApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.data.map(({ id }) => ({ type: API_TAGS.SubscriptionPlan as const, id })),
+              ...result.data.map(({ id }: { id: string }) => ({ type: API_TAGS.SubscriptionPlan, id })),
               { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
             ]
           : [{ type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' }],

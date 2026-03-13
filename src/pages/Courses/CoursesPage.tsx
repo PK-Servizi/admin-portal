@@ -23,7 +23,6 @@ import {
   Search,
   RefreshCw,
   GraduationCap,
-  Eye,
   Globe,
   Users,
   Clock,

@@ -56,7 +56,7 @@ export const AppointmentsPage: React.FC = () => {
   // API hooks
   const { data, isLoading, isFetching, refetch } = useGetAppointmentsQuery({});
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
-  const [updateAppointment, { isLoading: isUpdatingAppt }] = useUpdateAppointmentMutation();
+  const [, { isLoading: isUpdatingAppt }] = useUpdateAppointmentMutation();
   const [rescheduleAppointment] = useRescheduleAppointmentMutation();
   const [cancelAppointment, { isLoading: isCancelling }] = useCancelAppointmentMutation();
 

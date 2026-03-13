@@ -85,8 +85,8 @@ export const PaymentsList: React.FC = () => {
   const totalPages = data?.pagination?.pages || 1;
   const totalItems = data?.pagination?.total || 0;
   const stats = {
-    totalRevenue: payments.reduce((sum: number, p: Payment) => sum + (p.status === 'succeeded' ? p.amount : 0), 0),
-    successfulPayments: payments.filter((p: Payment) => p.status === 'succeeded').length,
+    totalRevenue: payments.reduce((sum: number, p: Payment) => sum + (p.status === 'completed' ? p.amount : 0), 0),
+    successfulPayments: payments.filter((p: Payment) => p.status === 'completed').length,
     pendingPayments: payments.filter((p: Payment) => p.status === 'pending').length,
     refundedAmount: payments.reduce((sum: number, p: Payment) => sum + (p.refundedAmount || 0), 0),
   };

@@ -36,9 +36,6 @@ const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default:
 const CMSPlaceholder = lazy(() => import('./pages/CMS').then(m => ({ default: m.CMSPlaceholder })));
 const CoursesPlaceholder = lazy(() => import('./pages/Courses').then(m => ({ default: m.CoursesPlaceholder })));
 
-// Legacy components (lazy loaded)
-const NotificationsList = lazy(() => import('./components/Notifications/NotificationsList'));
-
 // New pages
 const SubscriptionPlans = lazy(() => import('./pages/Subscriptions/SubscriptionPlans'));
 const NotificationsAdmin = lazy(() => import('./pages/Notifications/NotificationsAdmin'));

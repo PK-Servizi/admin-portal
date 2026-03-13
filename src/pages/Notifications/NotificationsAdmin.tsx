@@ -27,7 +27,6 @@ import {
   RefreshCw,
   Trash2,
   CheckCheck,
-  Mail,
   AlertCircle,
   Info,
   CheckCircle,
