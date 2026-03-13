@@ -317,7 +317,7 @@ export const adminApi = baseApi.injectEndpoints({
       AuditLogFilters
     >({
       query: (filters) => ({
-        url: '/admin/audit-logs',
+        url: '/audit-logs',
         params: filters,
       }),
       providesTags: (result) =>
@@ -335,8 +335,8 @@ export const adminApi = baseApi.injectEndpoints({
       { format: 'csv' | 'pdf'; filters?: AuditLogFilters }
     >({
       query: ({ format, filters }) => ({
-        url: `/admin/audit-logs/export/${format}`,
-        params: filters,
+        url: `/audit-logs/export`,
+        params: { ...filters, format },
       }),
       onQueryStarted: async (_, { queryFulfilled }) => {
         try {

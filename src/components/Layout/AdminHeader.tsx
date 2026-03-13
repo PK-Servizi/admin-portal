@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { selectCurrentUser } from '@/store/slices/authSlice';
+import { useGetMyNotificationsQuery, useMarkAllAsReadMutation } from '@/services/api/notifications.api';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -29,8 +30,11 @@ import {
   LogOut,
   Menu,
   Command,
-  Sparkles,
   Clock,
+  Info,
+  CheckCircle,
+  AlertCircle,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface AdminHeaderProps {
@@ -51,6 +55,38 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   const navigate = useNavigate();
   const user = useAppSelector(selectCurrentUser);
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: notificationsData } = useGetMyNotificationsQuery({ page: 1, limit: 5, isRead: false });
+  const [markAllAsRead] = useMarkAllAsReadMutation();
+  const recentNotifications = notificationsData?.data?.slice(0, 5) || [];
+
+  const getNotificationIcon = (type?: string) => {
+    switch (type) {
+      case 'success': return <CheckCircle className="h-4 w-4 text-white" />;
+      case 'warning': return <AlertTriangle className="h-4 w-4 text-white" />;
+      case 'error': return <AlertCircle className="h-4 w-4 text-white" />;
+      default: return <Info className="h-4 w-4 text-white" />;
+    }
+  };
+
+  const getNotificationBg = (type?: string) => {
+    switch (type) {
+      case 'success': return 'bg-gradient-to-br from-green-500 to-emerald-500';
+      case 'warning': return 'bg-gradient-to-br from-amber-500 to-orange-500';
+      case 'error': return 'bg-gradient-to-br from-red-500 to-rose-500';
+      default: return 'bg-gradient-to-br from-indigo-500 to-violet-500';
+    }
+  };
+
+  const formatTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,29 +214,33 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                   </div>
                 ) : (
                   <div className="py-1">
-                    {/* Sample notification */}
-                    <DropdownMenuItem asChild className="cursor-pointer px-3 py-3">
-                      <Link to="/notifications" className="flex gap-3">
-                        <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
-                          <Sparkles className="h-4 w-4 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                            New service request submitted
-                          </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                            <Clock className="h-3 w-3" /> 2 minutes ago
-                          </p>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
+                    {recentNotifications.map((n: any) => (
+                      <DropdownMenuItem key={n.id} asChild className="cursor-pointer px-3 py-3">
+                        <Link to="/notifications" className="flex gap-3">
+                          <div className={cn('flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center', getNotificationBg(n.type))}>
+                            {getNotificationIcon(n.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                              {n.title || 'Notification'}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                              <Clock className="h-3 w-3" /> {formatTimeAgo(n.createdAt)}
+                            </p>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
                   </div>
                 )}
               </div>
               {notificationCount > 0 && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer justify-center text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                  <DropdownMenuItem
+                    className="cursor-pointer justify-center text-sm font-medium text-indigo-600 dark:text-indigo-400"
+                    onClick={() => markAllAsRead()}
+                  >
                     Mark all as read
                   </DropdownMenuItem>
                 </>

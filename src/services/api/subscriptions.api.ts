@@ -18,7 +18,7 @@ export const subscriptionsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all subscription plans (public)
     getSubscriptionPlans: builder.query<ApiResponse<SubscriptionPlan[]>, void | { page?: number; limit?: number }>({
-      query: () => '/subscription-plans',
+      query: () => '/admin/subscription-plans',
       providesTags: [API_TAGS.SubscriptionPlan],
       keepUnusedDataFor: 600, // Cache for 10 minutes
     }),
@@ -29,7 +29,7 @@ export const subscriptionsApi = baseApi.injectEndpoints({
       { page?: number; limit?: number; search?: string; status?: string; planId?: string }
     >({
       query: (params) => ({
-        url: '/subscriptions',
+        url: '/admin/user-subscriptions',
         params,
       }),
       providesTags: (result) =>
@@ -111,9 +111,9 @@ export const subscriptionsApi = baseApi.injectEndpoints({
       { id: string; reason?: string }
     >({
       query: ({ id, reason }) => ({
-        url: `/subscriptions/${id}/cancel`,
-        method: 'POST',
-        body: { reason },
+        url: `/admin/user-subscriptions/${id}/status`,
+        method: 'PATCH',
+        body: { status: 'cancelled', reason },
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: API_TAGS.Subscription, id },

@@ -192,7 +192,7 @@ export const ServiceRequestDetail: React.FC = () => {
               </span>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {request.serviceType?.name || 'Unknown Service Type'}
+              {request.service?.name || request.serviceType?.name || 'Unknown Service Type'}
             </p>
           </div>
         </div>
@@ -261,7 +261,7 @@ export const ServiceRequestDetail: React.FC = () => {
                   Service Type
                 </label>
                 <p className="mt-1 text-gray-900 dark:text-white">
-                  {request.serviceType?.name || 'Unknown Service'}
+                  {request.service?.name || request.serviceType?.name || 'Unknown Service'}
                 </p>
               </div>
               {request.notes && request.notes.length > 0 && (
@@ -290,7 +290,7 @@ export const ServiceRequestDetail: React.FC = () => {
                     Service Type
                   </label>
                   <p className="mt-1 text-gray-900 dark:text-white">
-                    {request.serviceType?.name || 'Unknown'}
+                    {request.service?.name || request.serviceType?.name || 'Unknown'}
                   </p>
                 </div>
               </div>

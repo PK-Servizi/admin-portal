@@ -22,10 +22,20 @@ export const notificationsApi = baseApi.injectEndpoints({
         url: '/notifications/my',
         params: { page, limit, isRead },
       }),
+      // Backend returns { success, data: Notification[] } without pagination
+      transformResponse: (response: any) => {
+        const items = Array.isArray(response?.data) ? response.data : [];
+        if (response?.pagination) return response;
+        return {
+          ...response,
+          data: items,
+          pagination: { total: items.length, page: 1, pages: 1, skip: 0, take: items.length },
+        };
+      },
       providesTags: (result) =>
-        result
+        result?.data
           ? [
-              ...result.data.map(({ id }) => ({ type: API_TAGS.Notification, id })),
+              ...result.data.map(({ id }: Notification) => ({ type: API_TAGS.Notification, id })),
               { type: API_TAGS.Notification, id: 'LIST' },
             ]
           : [{ type: API_TAGS.Notification, id: 'LIST' }],
@@ -35,6 +45,11 @@ export const notificationsApi = baseApi.injectEndpoints({
     // Get unread count
     getUnreadCount: builder.query<ApiResponse<{ count: number }>, void>({
       query: () => '/notifications/unread-count',
+      // Backend returns { success, count } not { success, data: { count } }
+      transformResponse: (response: any) => {
+        if (response?.data?.count !== undefined) return response;
+        return { ...response, data: { count: response?.count ?? 0 } };
+      },
       providesTags: [{ type: API_TAGS.Notification, id: 'UNREAD_COUNT' }],
     }),
 
@@ -81,7 +96,7 @@ export const notificationsApi = baseApi.injectEndpoints({
     // Mark all as read
     markAllAsRead: builder.mutation<ApiResponse<void>, void>({
       query: () => ({
-        url: '/notifications/read-all',
+        url: '/notifications/mark-all-read',
         method: 'PATCH',
       }),
       invalidatesTags: [

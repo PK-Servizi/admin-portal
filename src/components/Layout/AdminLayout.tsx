@@ -9,6 +9,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { clearAuth } from '@/store/slices/authSlice';
 import { setTheme } from '@/store/slices/uiSlice';
 import { useLogoutMutation } from '@/services/api/auth.api';
+import { useGetUnreadCountQuery } from '@/services/api/notifications.api';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { AdminSidebar } from './AdminSidebar';
@@ -26,7 +27,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const theme = useAppSelector((state) => state.ui.theme);
   const isCollapsed = useAppSelector((state) => state.ui.sidebarCollapsed);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [notificationCount] = useState(3); // TODO: Connect to real notification count
+  const { data: unreadData } = useGetUnreadCountQuery(undefined, { pollingInterval: 30000 });
+  const notificationCount = unreadData?.data?.count ?? 0;
 
   // Handle theme
   useEffect(() => {

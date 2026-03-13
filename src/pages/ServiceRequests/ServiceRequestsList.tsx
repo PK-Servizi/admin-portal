@@ -425,7 +425,7 @@ export const ServiceRequestsListPage: React.FC = () => {
       </div>
 
       {/* Requests Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
@@ -507,7 +507,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                           #{request.id.slice(0, 8)}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
-                          {request.serviceType?.name || 'Unknown Service'}
+                          {request.service?.name || request.serviceType?.name || 'Unknown Service'}
                         </p>
                       </Link>
                     </td>

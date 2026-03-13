@@ -80,31 +80,59 @@ export const ReportsDashboard: React.FC = () => {
   const CHART_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#64748b', '#06b6d4', '#ec4899'];
 
   // Revenue trend chart data from API
-  const revenueData = (revenueMetrics?.trendData || []).map((d) => ({
-    date: format(new Date(d.date), 'MMM dd'),
-    revenue: d.amount,
-  }));
+  // Backend returns today/thisMonth/thisYear, not trendData array
+  const revenueData = revenueMetrics?.trendData
+    ? revenueMetrics.trendData.map((d: any) => ({
+        date: format(new Date(d.date), 'MMM dd'),
+        revenue: d.amount,
+      }))
+    : revenueMetrics
+      ? [
+          { date: 'Today', revenue: revenueMetrics.today || 0 },
+          { date: 'This Month', revenue: revenueMetrics.thisMonth || 0 },
+          { date: 'This Year', revenue: revenueMetrics.thisYear || 0 },
+        ]
+      : [];
 
   // User growth chart data from API
-  const userGrowthData = (userStats?.registrationTrend || []).map((d) => ({
-    month: format(new Date(d.date), 'MMM'),
-    newUsers: d.count,
-    activeUsers: userStats?.active || 0,
-    churned: userStats?.inactive || 0,
-  }));
+  // Backend returns total/active/inactive/byRole, not registrationTrend
+  const userGrowthData = userStats?.registrationTrend
+    ? userStats.registrationTrend.map((d: any) => ({
+        month: format(new Date(d.date), 'MMM'),
+        newUsers: d.count,
+        activeUsers: userStats?.active || 0,
+        churned: userStats?.inactive || 0,
+      }))
+    : userStats
+      ? [{ month: 'Current', newUsers: userStats.total || 0, activeUsers: userStats.active || 0, churned: userStats.inactive || 0 }]
+      : [];
 
   // Requests by type from API
-  const requestsByType = Object.entries(requestMetrics?.byServiceType || {}).map(([name, value], i) => ({
-    name,
-    value,
-    color: CHART_COLORS[i % CHART_COLORS.length],
-  }));
+  // Backend returns byType array [{type, count}], not byServiceType object
+  const requestsByType = (requestMetrics?.byServiceType
+    ? Object.entries(requestMetrics.byServiceType).map(([name, value]: [string, any], i: number) => ({
+        name,
+        value,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      }))
+    : (requestMetrics?.byType || []).map((item: any, i: number) => ({
+        name: item.type || 'Unknown',
+        value: item.count || 0,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      })));
 
-  const requestsByStatus = Object.entries(requestMetrics?.byStatus || {}).map(([name, value], i) => ({
-    name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
-    value,
-    color: CHART_COLORS[i % CHART_COLORS.length],
-  }));
+  // Backend returns byStatus array [{status, count}], not byStatus object
+  const requestsByStatus = (requestMetrics?.byStatus && !Array.isArray(requestMetrics.byStatus)
+    ? Object.entries(requestMetrics.byStatus).map(([name, value]: [string, any], i: number) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
+        value,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      }))
+    : (Array.isArray(requestMetrics?.byStatus) ? requestMetrics.byStatus : []).map((item: any, i: number) => ({
+        name: (item.status || 'Unknown').charAt(0).toUpperCase() + (item.status || '').slice(1).replace(/_/g, ' '),
+        value: item.count || 0,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      })));
 
   // Export report
   const handleExport = (fmt: 'csv' | 'pdf') => {
@@ -217,7 +245,7 @@ export const ReportsDashboard: React.FC = () => {
             {[
               {
                 label: 'Total Revenue',
-                value: revenueMetrics ? `€${revenueMetrics.total.toLocaleString()}` : '€0',
+                value: revenueMetrics ? `€${(revenueMetrics.total ?? revenueMetrics.thisYear ?? 0).toLocaleString()}` : '€0',
                 icon: DollarSign,
                 color: 'emerald',
               },
@@ -235,7 +263,7 @@ export const ReportsDashboard: React.FC = () => {
               },
               {
                 label: 'Active Subscriptions',
-                value: String(subscriptionMetrics?.activeCount ?? 0),
+                value: String(subscriptionMetrics?.activeSubscriptions ?? subscriptionMetrics?.activeCount ?? 0),
                 icon: CreditCard,
                 color: 'amber',
               },
@@ -342,7 +370,7 @@ export const ReportsDashboard: React.FC = () => {
                       label={({ name, percent }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
                       labelLine={false}
                     >
-                      {requestsByType.map((entry, index) => (
+                      {requestsByType.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -373,6 +401,7 @@ export const ReportsDashboard: React.FC = () => {
                 <BarChart data={workload}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-700" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#64748b" />
+                  {/* name from workload or operatorName from backend */}
                   <YAxis tick={{ fontSize: 12 }} stroke="#64748b" />
                   <Tooltip
                     contentStyle={{
@@ -386,6 +415,7 @@ export const ReportsDashboard: React.FC = () => {
                   <Bar dataKey="pending" name="Pending" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="inProgress" name="In Progress" fill="#6366f1" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="completed" name="Completed" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="requestCount" name="Requests" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -436,7 +466,7 @@ export const ReportsDashboard: React.FC = () => {
               <Card className="border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm shadow-soft animate-fade-up" style={{ animationDelay: '50ms' }}>
                 <CardContent className="p-5">
                   <p className="text-sm text-slate-500 dark:text-slate-400">Total Revenue</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(revenueMetrics?.total || 0).toLocaleString()}</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(revenueMetrics?.total ?? revenueMetrics?.thisYear ?? 0).toLocaleString()}</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                     This year: €{(revenueMetrics?.thisYear || 0).toLocaleString()}
                   </p>
@@ -456,7 +486,7 @@ export const ReportsDashboard: React.FC = () => {
                   <p className="text-sm text-slate-500 dark:text-slate-400">MRR</p>
                   <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(subscriptionMetrics?.monthlyRecurringRevenue || 0).toLocaleString()}</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                    {subscriptionMetrics?.activeCount || 0} active subscriptions
+                    {subscriptionMetrics?.activeSubscriptions ?? subscriptionMetrics?.activeCount ?? 0} active subscriptions
                   </p>
                 </CardContent>
               </Card>
@@ -545,7 +575,7 @@ export const ReportsDashboard: React.FC = () => {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {requestsByStatus.map((entry, index) => (
+                      {requestsByStatus.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>

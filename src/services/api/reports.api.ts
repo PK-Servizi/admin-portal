@@ -17,22 +17,24 @@ export interface DashboardMetrics {
 
 export interface ServiceRequestMetrics {
   total: number;
-  byStatus: Record<string, number>;
-  byServiceType: Record<string, number>;
+  byStatus: Record<string, number> | Array<{ status: string; count: number }>;
+  byServiceType?: Record<string, number>;
+  byType?: Array<{ type: string; count: number }>;
   byPriority: Record<string, number>;
   completionRate: number;
   averageProcessingTime: number;
-  trendData: Array<{ date: string; count: number }>;
+  trendData?: Array<{ date: string; count: number }>;
 }
 
 export interface SubscriptionMetrics {
   total: number;
   byPlan: Record<string, number>;
-  activeCount: number;
+  activeCount?: number;
+  activeSubscriptions?: number;
   cancelledCount: number;
   churnRate: number;
   monthlyRecurringRevenue: number;
-  trendData: Array<{ date: string; count: number }>;
+  trendData?: Array<{ date: string; count: number }>;
 }
 
 export interface RevenueMetrics {
@@ -52,7 +54,7 @@ export interface UserStatistics {
   inactive: number;
   newThisMonth: number;
   byRole: Record<string, number>;
-  registrationTrend: Array<{ date: string; count: number }>;
+  registrationTrend?: Array<{ date: string; count: number }>;
 }
 
 export interface UserActivityMetrics {
