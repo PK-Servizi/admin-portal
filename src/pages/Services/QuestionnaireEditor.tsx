@@ -319,7 +319,7 @@ export const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <div className="flex items-center gap-2">
             <button
               onClick={handleFormat}
@@ -397,7 +397,7 @@ export const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({
 
           {/* Help Panel */}
           {showHelp && (
-            <div className="w-1/3 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto">
+            <div className="w-1/3 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50 overflow-y-auto">
               <div className="p-4">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                   Field Types & Options
@@ -428,10 +428,10 @@ export const QuestionnaireEditor: React.FC<QuestionnaireEditorProps> = ({
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             Cancel
           </button>

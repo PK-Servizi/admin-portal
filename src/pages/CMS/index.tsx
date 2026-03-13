@@ -44,7 +44,7 @@ export const CMSPlaceholder: React.FC = () => {
             ].map((feature, index) => (
               <div 
                 key={feature.title}
-                className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl animate-fade-up"
+                className="p-4 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white rounded-xl animate-fade-up"
                 style={{ animationDelay: `${(index + 2) * 50}ms` }}
               >
                 <span className="text-2xl mb-2 block">{feature.icon}</span>

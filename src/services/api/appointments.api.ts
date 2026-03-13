@@ -166,6 +166,37 @@ export const appointmentsApi = baseApi.injectEndpoints({
       },
     }),
 
+    // Update appointment (Admin)
+    updateAppointment: builder.mutation<
+      ApiResponse<Appointment>,
+      { id: string; data: Partial<CreateAppointmentData> & { title?: string } }
+    >({
+      query: ({ id, data }) => ({
+        url: `/appointments/${id}/status`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.Appointment, id },
+        { type: API_TAGS.Appointment, id: 'LIST' },
+        { type: API_TAGS.Appointment, id: 'ADMIN_LIST' },
+        API_TAGS.Appointment,
+      ],
+    }),
+
+    // Confirm appointment (Admin)
+    confirmAppointment: builder.mutation<ApiResponse<Appointment>, string>({
+      query: (id) => ({
+        url: `/appointments/${id}/confirm`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: API_TAGS.Appointment, id },
+        { type: API_TAGS.Appointment, id: 'LIST' },
+        { type: API_TAGS.Appointment, id: 'ADMIN_LIST' },
+      ],
+    }),
+
     // Cancel appointment
     cancelAppointment: builder.mutation<ApiResponse<Appointment>, { id: string; reason?: string }>({
       query: ({ id, reason }) => ({
@@ -176,6 +207,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [
         { type: API_TAGS.Appointment, id },
         { type: API_TAGS.Appointment, id: 'LIST' },
+        { type: API_TAGS.Appointment, id: 'ADMIN_LIST' },
         API_TAGS.Appointment,
       ],
       onQueryStarted: async ({ id, reason }, { dispatch, queryFulfilled }) => {
@@ -222,6 +254,8 @@ export const {
   useGetMyAppointmentsQuery,
   useGetAppointmentQuery,
   useCreateAppointmentMutation,
+  useUpdateAppointmentMutation,
+  useConfirmAppointmentMutation,
   useRescheduleAppointmentMutation,
   useCancelAppointmentMutation,
 } = appointmentsApi;

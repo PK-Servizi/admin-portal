@@ -39,6 +39,10 @@ const CoursesPlaceholder = lazy(() => import('./pages/Courses').then(m => ({ def
 // Legacy components (lazy loaded)
 const NotificationsList = lazy(() => import('./components/Notifications/NotificationsList'));
 
+// New pages
+const SubscriptionPlans = lazy(() => import('./pages/Subscriptions/SubscriptionPlans'));
+const NotificationsAdmin = lazy(() => import('./pages/Notifications/NotificationsAdmin'));
+
 /**
  * Loading Spinner Component
  */
@@ -183,6 +187,7 @@ function App() {
 
                   {/* Subscriptions */}
                   <Route path="/subscriptions" element={<SubscriptionsList />} />
+                  <Route path="/subscription-plans" element={<SubscriptionPlans />} />
 
                   {/* Payments */}
                   <Route path="/payments" element={<PaymentsList />} />
@@ -191,7 +196,7 @@ function App() {
                   <Route path="/documents" element={<DocumentsReview />} />
 
                   {/* Notifications */}
-                  <Route path="/notifications" element={<NotificationsList />} />
+                  <Route path="/notifications" element={<NotificationsAdmin />} />
 
                   {/* CMS */}
                   <Route path="/cms" element={<CMSPlaceholder />} />

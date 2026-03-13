@@ -190,6 +190,99 @@ export const subscriptionsApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    // ========================
+    // Admin Subscription Plans
+    // ========================
+
+    // Get all plans (Admin - includes inactive)
+    getAdminSubscriptionPlans: builder.query<
+      ApiResponse<SubscriptionPlan[]>,
+      void
+    >({
+      query: () => '/admin/subscription-plans',
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: API_TAGS.SubscriptionPlan as const, id })),
+              { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
+            ]
+          : [{ type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' }],
+      keepUnusedDataFor: 120,
+    }),
+
+    // Get plan by ID (Admin)
+    getAdminSubscriptionPlan: builder.query<ApiResponse<SubscriptionPlan>, string>({
+      query: (id) => `/admin/subscription-plans/${id}`,
+      providesTags: (_result, _error, id) => [{ type: API_TAGS.SubscriptionPlan, id }],
+    }),
+
+    // Create subscription plan
+    createSubscriptionPlan: builder.mutation<
+      ApiResponse<SubscriptionPlan>,
+      Partial<SubscriptionPlan>
+    >({
+      query: (data) => ({
+        url: '/admin/subscription-plans',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [
+        { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
+        API_TAGS.SubscriptionPlan,
+      ],
+    }),
+
+    // Update subscription plan
+    updateSubscriptionPlan: builder.mutation<
+      ApiResponse<SubscriptionPlan>,
+      { id: string; data: Partial<SubscriptionPlan> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/admin/subscription-plans/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.SubscriptionPlan, id },
+        { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
+        API_TAGS.SubscriptionPlan,
+      ],
+    }),
+
+    // Delete (deactivate) subscription plan
+    deleteSubscriptionPlan: builder.mutation<ApiResponse<void>, string>({
+      query: (id) => ({
+        url: `/admin/subscription-plans/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: API_TAGS.SubscriptionPlan, id },
+        { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
+        API_TAGS.SubscriptionPlan,
+      ],
+    }),
+
+    // Clone subscription plan
+    cloneSubscriptionPlan: builder.mutation<ApiResponse<SubscriptionPlan>, string>({
+      query: (id) => ({
+        url: `/admin/subscription-plans/${id}/clone`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        { type: API_TAGS.SubscriptionPlan, id: 'ADMIN_LIST' },
+        API_TAGS.SubscriptionPlan,
+      ],
+    }),
+
+    // Get plan statistics
+    getSubscriptionPlanStatistics: builder.query<
+      ApiResponse<{ activeSubscribers: number; revenue: number; churnRate: number }>,
+      string
+    >({
+      query: (id) => `/admin/subscription-plans/${id}/statistics`,
+      keepUnusedDataFor: 300,
+    }),
   }),
   overrideExisting: false,
 });
@@ -209,4 +302,12 @@ export const {
   useGetPaymentReceiptQuery,
   useGetPaymentInvoiceQuery,
   useResendPaymentReceiptMutation,
+  // Admin Plan CRUD
+  useGetAdminSubscriptionPlansQuery,
+  useGetAdminSubscriptionPlanQuery,
+  useCreateSubscriptionPlanMutation,
+  useUpdateSubscriptionPlanMutation,
+  useDeleteSubscriptionPlanMutation,
+  useCloneSubscriptionPlanMutation,
+  useGetSubscriptionPlanStatisticsQuery,
 } = subscriptionsApi;

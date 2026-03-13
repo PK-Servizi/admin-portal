@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Mail, Lock, Sparkles } from 'lucide-react';
+import { Loader2, Mail, Lock } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -62,13 +62,13 @@ export const Login: React.FC = () => {
       <Card className="w-full max-w-md relative z-10 border-0 bg-white/10 backdrop-blur-xl shadow-2xl shadow-indigo-500/10 animate-scale-in">
         <CardHeader className="space-y-4 text-center pb-2">
           {/* Logo */}
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <Sparkles className="h-8 w-8 text-white" />
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-indigo-500/30 overflow-hidden">
+            <img src="/logo.png" alt="TuoCaf" className="w-12 h-12 object-contain" />
           </div>
           <div>
             <CardTitle className="text-2xl font-bold text-white">Welcome Back</CardTitle>
             <CardDescription className="text-slate-400">
-              Sign in to PK Servizi Admin Panel
+              Sign in to Admin Panel
             </CardDescription>
           </div>
         </CardHeader>
@@ -149,7 +149,7 @@ export const Login: React.FC = () => {
 
       {/* Footer */}
       <div className="absolute bottom-4 text-center text-slate-500 text-sm">
-        © 2026 PK Servizi. All rights reserved.
+        © 2026 TuoCaf. All rights reserved.
       </div>
     </div>
   );

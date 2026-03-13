@@ -225,7 +225,7 @@ export const UserDetail: React.FC = () => {
                 {isEditing ? (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         First Name
                       </label>
                       <input
@@ -234,11 +234,11 @@ export const UserDetail: React.FC = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, firstName: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Last Name
                       </label>
                       <input
@@ -247,11 +247,11 @@ export const UserDetail: React.FC = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, lastName: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Email
                       </label>
                       <input
@@ -260,11 +260,11 @@ export const UserDetail: React.FC = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Phone
                       </label>
                       <input
@@ -273,11 +273,11 @@ export const UserDetail: React.FC = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, phoneNumber: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Role
                       </label>
                       <select
@@ -285,7 +285,7 @@ export const UserDetail: React.FC = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, roleId: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
                         {roles.map((role) => (
                           <option key={role.id} value={role.id}>
@@ -465,7 +465,7 @@ export const UserDetail: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <ClipboardList className="h-5 w-5 text-blue-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Service Requests</span>
+                  <span className="text-gray-700 dark:text-gray-200">Service Requests</span>
                 </div>
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">
                   View →

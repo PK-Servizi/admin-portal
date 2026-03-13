@@ -312,7 +312,7 @@ export const ServiceTypesList: React.FC = () => {
                 placeholder="Search service type..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
               />
               {searchInput && (
                 <button
@@ -356,7 +356,7 @@ export const ServiceTypesList: React.FC = () => {
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Status
                 </label>
                 <select
@@ -367,7 +367,7 @@ export const ServiceTypesList: React.FC = () => {
                       value === '' ? null : value === 'active'
                     ));
                   }}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
                   <option value="">All statuses</option>
                   <option value="active">Active</option>
@@ -375,7 +375,7 @@ export const ServiceTypesList: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Sort by
                 </label>
                 <select
@@ -384,7 +384,7 @@ export const ServiceTypesList: React.FC = () => {
                     const [sortBy, sortOrder] = e.target.value.split('-') as [typeof filters.sortBy, typeof filters.sortOrder];
                     dispatch(setServiceTypesSort({ sortBy, sortOrder }));
                   }}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
                   <option value="name-ASC">Name (A-Z)</option>
                   <option value="name-DESC">Name (Z-A)</option>
@@ -433,7 +433,7 @@ export const ServiceTypesList: React.FC = () => {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50 border-b border-gray-200 dark:border-gray-700">
                   <tr>
                     {bulkMode && (
                       <th className="w-12 px-4 py-3">
@@ -598,7 +598,7 @@ export const ServiceTypesList: React.FC = () => {
                   <select
                     value={pagination.pageSize}
                     onChange={(e) => dispatch(setServiceTypesPageSize(Number(e.target.value)))}
-                    className="px-2 py-1 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded focus:ring-2 focus:ring-indigo-500"
+                    className="px-2 py-1 text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>

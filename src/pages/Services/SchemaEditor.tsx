@@ -244,7 +244,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <div className="flex items-center gap-2">
             <button
               onClick={handleFormat}
@@ -310,7 +310,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
 
           {/* Errors Panel */}
           {hasErrors && (
-            <div className="w-80 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto">
+            <div className="w-80 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50 overflow-y-auto">
               <div className="p-4">
                 <h3 className="flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400 mb-3">
                   <AlertCircle className="h-4 w-4" />
@@ -332,7 +332,7 @@ export const SchemaEditor: React.FC<SchemaEditorProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <div className="text-sm text-gray-500 dark:text-gray-400">
             Use JSON format to define the form structure
           </div>

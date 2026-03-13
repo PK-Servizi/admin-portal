@@ -158,9 +158,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 rounded-xl shadow-soft-lg border-slate-200/50 dark:border-slate-700/50">
+            <DropdownMenuContent align="end" className="w-80 rounded-xl shadow-soft-lg border-slate-200/50 dark:border-slate-700/50 bg-white dark:bg-slate-800">
               <DropdownMenuLabel className="flex items-center justify-between">
-                <span className="font-semibold">Notifications</span>
+                <span className="font-semibold text-slate-900 dark:text-white">Notifications</span>
                 {notificationCount > 0 && (
                   <span className="text-xs bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full">
                     {notificationCount} new
@@ -171,10 +171,10 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
               <div className="max-h-80 overflow-y-auto">
                 {notificationCount === 0 ? (
                   <div className="py-8 text-center">
-                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
                       <Bell className="h-6 w-6 text-slate-400" />
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">No new notifications</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-300">No new notifications</p>
                   </div>
                 ) : (
                   <div className="py-1">
@@ -197,6 +197,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                   </div>
                 )}
               </div>
+              {notificationCount > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer justify-center text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                    Mark all as read
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="cursor-pointer justify-center">
                 <Link to="/notifications" className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
@@ -232,7 +240,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-soft-lg border-slate-200/50 dark:border-slate-700/50">
+            <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-soft-lg border-slate-200/50 dark:border-slate-700/50 bg-white dark:bg-slate-800">
               <DropdownMenuLabel className="font-normal md:hidden">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{userFullName}</p>

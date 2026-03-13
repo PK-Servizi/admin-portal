@@ -11,6 +11,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import {
   useGetAppointmentsQuery,
   useCreateAppointmentMutation,
+  useUpdateAppointmentMutation,
   useRescheduleAppointmentMutation,
   useCancelAppointmentMutation,
 } from '@/services/api/appointments.api';
@@ -55,8 +56,11 @@ export const AppointmentsPage: React.FC = () => {
   // API hooks
   const { data, isLoading, isFetching, refetch } = useGetAppointmentsQuery({});
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
+  const [updateAppointment, { isLoading: isUpdatingAppt }] = useUpdateAppointmentMutation();
   const [rescheduleAppointment] = useRescheduleAppointmentMutation();
   const [cancelAppointment, { isLoading: isCancelling }] = useCancelAppointmentMutation();
+
+  const isSaving = isCreating || isUpdatingAppt;
 
   const appointments = data?.data || [];
 
@@ -127,23 +131,35 @@ export const AppointmentsPage: React.FC = () => {
     }
   }, [rescheduleAppointment]);
 
-  // Handle form submission
+  // Handle form submission (create or update)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const scheduledDate = new Date(`${modalData.date}T${modalData.time}`).toISOString();
       
-      await createAppointment({
-        scheduledDate,
-        duration: modalData.duration,
-        meetingType: 'in_person',
-        notes: modalData.notes || undefined,
-      }).unwrap();
+      if (isEditing && modalData.id) {
+        // Update existing appointment by rescheduling + updating notes
+        await rescheduleAppointment({
+          id: modalData.id,
+          data: {
+            scheduledDate,
+            notes: modalData.notes || undefined,
+          },
+        }).unwrap();
+      } else {
+        await createAppointment({
+          scheduledDate,
+          duration: modalData.duration,
+          meetingType: 'in_person',
+          notes: modalData.notes || undefined,
+        }).unwrap();
+      }
       
       setShowModal(false);
       setModalData(initialModalData);
+      setIsEditing(false);
     } catch (error) {
-      console.error('Failed to create appointment:', error);
+      console.error('Failed to save appointment:', error);
     }
   };
 
@@ -286,7 +302,7 @@ export const AppointmentsPage: React.FC = () => {
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: status.color }}
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{status.label}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-200">{status.label}</span>
             </div>
           ))}
         </div>
@@ -314,14 +330,14 @@ export const AppointmentsPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Title
                 </label>
                 <input
                   type="text"
                   value={modalData.title}
                   onChange={(e) => setModalData({ ...modalData, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="Appointment title"
                   required
                 />
@@ -329,39 +345,39 @@ export const AppointmentsPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Date
                   </label>
                   <input
                     type="date"
                     value={modalData.date}
                     onChange={(e) => setModalData({ ...modalData, date: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Time
                   </label>
                   <input
                     type="time"
                     value={modalData.time}
                     onChange={(e) => setModalData({ ...modalData, time: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Duration (minutes)
                 </label>
                 <select
                   value={modalData.duration}
                   onChange={(e) => setModalData({ ...modalData, duration: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value={15}>15 minutes</option>
                   <option value={30}>30 minutes</option>
@@ -373,14 +389,14 @@ export const AppointmentsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Notes
                 </label>
                 <textarea
                   value={modalData.notes}
                   onChange={(e) => setModalData({ ...modalData, notes: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
                   placeholder="Additional notes..."
                 />
               </div>
@@ -395,10 +411,10 @@ export const AppointmentsPage: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isCreating}
+                  disabled={isSaving}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {isCreating && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isEditing ? 'Save Changes' : 'Create Appointment'}
                 </button>
               </div>
@@ -449,7 +465,7 @@ export const AppointmentsPage: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-gray-700 dark:text-gray-200">
                     {new Date(selectedAppointment.scheduledDate).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
@@ -460,7 +476,7 @@ export const AppointmentsPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-gray-700 dark:text-gray-200">
                     {new Date(selectedAppointment.scheduledDate).toLocaleTimeString('en-US', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -477,7 +493,7 @@ export const AppointmentsPage: React.FC = () => {
                 {selectedAppointment.user && (
                   <div className="flex items-center gap-3 text-sm">
                     <User className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-700 dark:text-gray-300">
+                    <span className="text-gray-700 dark:text-gray-200">
                       {selectedAppointment.user.firstName} {selectedAppointment.user.lastName}
                     </span>
                   </div>
@@ -485,7 +501,7 @@ export const AppointmentsPage: React.FC = () => {
                 {selectedAppointment.location && (
                   <div className="flex items-center gap-3 text-sm">
                     <MapPin className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-700 dark:text-gray-300">
+                    <span className="text-gray-700 dark:text-gray-200">
                       {selectedAppointment.location}
                     </span>
                   </div>
@@ -495,20 +511,43 @@ export const AppointmentsPage: React.FC = () => {
               {selectedAppointment.notes && (
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Notes</p>
-                  <p className="text-gray-700 dark:text-gray-300">{selectedAppointment.notes}</p>
+                  <p className="text-gray-700 dark:text-gray-200">{selectedAppointment.notes}</p>
                 </div>
               )}
             </div>
 
             <div className="flex justify-between gap-3 pt-6 mt-4 border-t border-gray-200 dark:border-gray-700">
               {selectedAppointment.status !== 'cancelled' && selectedAppointment.status !== 'completed' && (
-                <button
-                  onClick={handleCancelAppointment}
-                  disabled={isCancelling}
-                  className="px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
-                >
-                  {isCancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Cancel Appointment'}
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      // Open edit modal with existing appointment data
+                      const aptDate = new Date(selectedAppointment.scheduledDate);
+                      setModalData({
+                        id: selectedAppointment.id,
+                        title: selectedAppointment.notes || 'Appointment',
+                        date: aptDate.toISOString().split('T')[0],
+                        time: aptDate.toTimeString().slice(0, 5),
+                        duration: selectedAppointment.duration || 30,
+                        userId: selectedAppointment.userId || '',
+                        notes: selectedAppointment.notes || '',
+                      });
+                      setIsEditing(true);
+                      setSelectedAppointment(null);
+                      setShowModal(true);
+                    }}
+                    className="px-4 py-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleCancelAppointment}
+                    disabled={isCancelling}
+                    className="px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                  >
+                    {isCancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Cancel Appointment'}
+                  </button>
+                </>
               )}
               <button
                 onClick={() => setSelectedAppointment(null)}

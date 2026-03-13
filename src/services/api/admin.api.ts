@@ -328,6 +328,27 @@ export const adminApi = baseApi.injectEndpoints({
           : [{ type: API_TAGS.Report, id: 'AUDIT_LIST' }],
       keepUnusedDataFor: 60,
     }),
+
+    // Export Audit Logs
+    exportAuditLogs: builder.mutation<
+      ApiResponse<{ url: string }>,
+      { format: 'csv' | 'pdf'; filters?: AuditLogFilters }
+    >({
+      query: ({ format, filters }) => ({
+        url: `/admin/audit-logs/export/${format}`,
+        params: filters,
+      }),
+      onQueryStarted: async (_, { queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.data.url) {
+            window.open(data.data.url, '_blank');
+          }
+        } catch (error) {
+          console.error('Audit log export failed:', error);
+        }
+      },
+    }),
   }),
   overrideExisting: false,
 });
@@ -350,4 +371,5 @@ export const {
   useExportRequestsMutation,
   useGetAuditLogsQuery,
   useLazyGetAuditLogsQuery,
+  useExportAuditLogsMutation,
 } = adminApi;

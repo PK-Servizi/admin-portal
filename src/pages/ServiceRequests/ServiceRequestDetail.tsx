@@ -10,6 +10,7 @@ import {
   useUpdateRequestStatusMutation,
   useAssignToOperatorMutation,
   useAddInternalNoteMutation,
+  useRequestAdditionalDocumentsMutation,
 } from '@/services/api/admin.api';
 import { useGetAllUsersQuery } from '@/services/api/users-admin.api';
 import { cn } from '@/lib/utils';
@@ -64,6 +65,9 @@ export const ServiceRequestDetail: React.FC = () => {
   const [newNote, setNewNote] = useState('');
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showRequestDocsModal, setShowRequestDocsModal] = useState(false);
+  const [requestDocsReason, setRequestDocsReason] = useState('');
+  const [requestDocsCategories, setRequestDocsCategories] = useState<string[]>([]);
 
   // API hooks
   const { data, isLoading, error } = useGetRequestDetailQuery(id!);
@@ -72,6 +76,7 @@ export const ServiceRequestDetail: React.FC = () => {
   const [updateStatus, { isLoading: isUpdatingStatus }] = useUpdateRequestStatusMutation();
   const [assignOperator, { isLoading: isAssigning }] = useAssignToOperatorMutation();
   const [addNote, { isLoading: isAddingNote }] = useAddInternalNoteMutation();
+  const [requestDocuments, { isLoading: isRequestingDocs }] = useRequestAdditionalDocumentsMutation();
 
   const request = data?.data;
   const operators = operatorsData?.data || [];
@@ -105,6 +110,34 @@ export const ServiceRequestDetail: React.FC = () => {
       console.error('Failed to add note:', error);
     }
   };
+
+  const handleRequestDocuments = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (requestDocsCategories.length === 0 || !requestDocsReason.trim()) return;
+
+    try {
+      await requestDocuments({
+        id: id!,
+        data: { categories: requestDocsCategories, reason: requestDocsReason },
+      }).unwrap();
+      setShowRequestDocsModal(false);
+      setRequestDocsReason('');
+      setRequestDocsCategories([]);
+    } catch (error) {
+      console.error('Failed to request documents:', error);
+    }
+  };
+
+  const documentCategories = [
+    'identity_document',
+    'fiscal_code',
+    'income_certificate',
+    'bank_statement',
+    'property_document',
+    'medical_receipts',
+    'expense_receipts',
+    'other',
+  ];
 
   if (isLoading) {
     return (
@@ -194,7 +227,7 @@ export const ServiceRequestDetail: React.FC = () => {
                         'w-full text-left px-4 py-2 text-sm transition-colors',
                         request.status === value
                           ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200'
                       )}
                     >
                       {key.replace(/_/g, ' ')}
@@ -270,7 +303,10 @@ export const ServiceRequestDetail: React.FC = () => {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Documents
               </h2>
-              <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
+              <button
+                onClick={() => setShowRequestDocsModal(true)}
+                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              >
                 <Plus className="h-4 w-4" />
                 Request Documents
               </button>
@@ -348,7 +384,7 @@ export const ServiceRequestDetail: React.FC = () => {
                     onChange={(e) => setNewNote(e.target.value)}
                     placeholder="Add an internal note..."
                     rows={2}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   />
                 </div>
                 <button
@@ -382,7 +418,7 @@ export const ServiceRequestDetail: React.FC = () => {
                           {new Date(note.createdAt).toLocaleString()}
                         </span>
                       </div>
-                      <p className="mt-1 text-gray-700 dark:text-gray-300">{note.content}</p>
+                      <p className="mt-1 text-gray-700 dark:text-gray-200">{note.content}</p>
                     </div>
                   </div>
                 ))
@@ -422,12 +458,12 @@ export const ServiceRequestDetail: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-700 dark:text-gray-300">{request.user?.email}</span>
+                <span className="text-gray-700 dark:text-gray-200">{request.user?.email}</span>
               </div>
               {request.user?.phoneNumber && (
                 <div className="flex items-center gap-3 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-700 dark:text-gray-300">{request.user?.phoneNumber}</span>
+                  <span className="text-gray-700 dark:text-gray-200">{request.user?.phoneNumber}</span>
                 </div>
               )}
             </div>
@@ -542,6 +578,79 @@ export const ServiceRequestDetail: React.FC = () => {
                 Cancel
               </button>
             </div>
+          </div>
+        </>
+      )}
+
+      {/* Request Documents Modal */}
+      {showRequestDocsModal && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            onClick={() => setShowRequestDocsModal(false)}
+          />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl z-50 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Request Additional Documents
+            </h3>
+            <form onSubmit={handleRequestDocuments} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  Document Categories <span className="text-red-500">*</span>
+                </label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {documentCategories.map((cat) => (
+                    <label key={cat} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={requestDocsCategories.includes(cat)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setRequestDocsCategories([...requestDocsCategories, cat]);
+                          } else {
+                            setRequestDocsCategories(requestDocsCategories.filter((c) => c !== cat));
+                          }
+                        }}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-200 capitalize">
+                        {cat.replace(/_/g, ' ')}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                  Reason <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={requestDocsReason}
+                  onChange={(e) => setRequestDocsReason(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Explain why additional documents are needed..."
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowRequestDocsModal(false)}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={requestDocsCategories.length === 0 || !requestDocsReason.trim() || isRequestingDocs}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {isRequestingDocs && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Send Request
+                </button>
+              </div>
+            </form>
           </div>
         </>
       )}

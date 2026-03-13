@@ -69,11 +69,15 @@ export const PaymentsList: React.FC = () => {
   const [refundAmount, setRefundAmount] = useState('');
   const [refundReason, setRefundReason] = useState('');
 
-  // API hooks - note: search, paymentMethod, dates are UI only for now
+  // API hooks
   const { data, isLoading, isFetching, refetch } = useGetAllPaymentsQuery({
     skip: (page - 1) * limit,
     take: limit,
     status: status || undefined,
+    search: searchTerm || undefined,
+    paymentMethod: paymentMethod || undefined,
+    startDate: dateFrom || undefined,
+    endDate: dateTo || undefined,
   });
   const [processRefund, { isLoading: isRefunding }] = useProcessRefundMutation();
 
@@ -81,10 +85,10 @@ export const PaymentsList: React.FC = () => {
   const totalPages = data?.pagination?.pages || 1;
   const totalItems = data?.pagination?.total || 0;
   const stats = {
-    totalRevenue: 0,
-    successfulPayments: 0,
-    pendingPayments: 0,
-    refundedAmount: 0,
+    totalRevenue: payments.reduce((sum: number, p: Payment) => sum + (p.status === 'succeeded' ? p.amount : 0), 0),
+    successfulPayments: payments.filter((p: Payment) => p.status === 'succeeded').length,
+    pendingPayments: payments.filter((p: Payment) => p.status === 'pending').length,
+    refundedAmount: payments.reduce((sum: number, p: Payment) => sum + (p.refundedAmount || 0), 0),
   };
 
   // Format currency
@@ -295,7 +299,7 @@ export const PaymentsList: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -307,7 +311,7 @@ export const PaymentsList: React.FC = () => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+              className="px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
             >
               {PAYMENT_STATUSES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -322,7 +326,7 @@ export const PaymentsList: React.FC = () => {
                 setPaymentMethod(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+              className="px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
             >
               {PAYMENT_METHODS.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -358,7 +362,7 @@ export const PaymentsList: React.FC = () => {
                   setDateFrom(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-1.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                className="px-3 py-1.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -370,7 +374,7 @@ export const PaymentsList: React.FC = () => {
                   setDateTo(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-1.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                className="px-3 py-1.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
             {(dateFrom || dateTo) && (
@@ -392,7 +396,7 @@ export const PaymentsList: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-900/50">
+            <thead className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Transaction
@@ -478,7 +482,7 @@ export const PaymentsList: React.FC = () => {
                     </td>
                     <td className="px-4 py-4">{getStatusBadge(payment.status)}</td>
                     <td className="px-4 py-4">
-                      <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
+                      <span className="text-sm text-gray-700 dark:text-gray-200 capitalize">
                         {payment.paymentMethod?.replace(/_/g, ' ')}
                       </span>
                     </td>
@@ -686,7 +690,7 @@ export const PaymentsList: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Refund Amount ({selectedPayment.currency?.toUpperCase() || 'EUR'})
                 </label>
                 <input
@@ -696,19 +700,19 @@ export const PaymentsList: React.FC = () => {
                   step="0.01"
                   min="0.01"
                   max={(selectedPayment.amount - (selectedPayment.refundedAmount || 0)) / 100}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Reason for Refund
                 </label>
                 <textarea
                   value={refundReason}
                   onChange={(e) => setRefundReason(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 resize-none"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 resize-none"
                   placeholder="Enter reason for refund..."
                 />
               </div>

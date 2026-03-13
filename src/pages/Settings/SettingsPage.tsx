@@ -43,9 +43,9 @@ export const SettingsPage: React.FC = () => {
 
   // General settings
   const [generalSettings, setGeneralSettings] = useState({
-    siteName: 'PK Servizi Admin',
-    siteUrl: 'https://admin.pk-servizi.com',
-    supportEmail: 'support@pk-servizi.com',
+    siteName: 'TuoCaf Admin',
+    siteUrl: 'https://admin.tuocaf.com',
+    supportEmail: 'support@tuocaf.com',
     defaultLanguage: 'en',
     timezone: 'Europe/Rome',
     dateFormat: 'DD/MM/YYYY',
@@ -86,7 +86,7 @@ export const SettingsPage: React.FC = () => {
     smtpEnabled: true,
     smtpHost: 'smtp.gmail.com',
     smtpPort: 587,
-    smtpUser: 'noreply@pk-servizi.com',
+    smtpUser: 'noreply@tuocaf.com',
   });
 
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
@@ -173,7 +173,7 @@ export const SettingsPage: React.FC = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Site Name
                     </label>
                     <input
@@ -182,11 +182,11 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, siteName: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Site URL
                     </label>
                     <input
@@ -195,11 +195,11 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, siteUrl: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Support Email
                     </label>
                     <input
@@ -208,11 +208,11 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, supportEmail: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Default Language
                     </label>
                     <select
@@ -220,7 +220,7 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, defaultLanguage: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="en">English</option>
                       <option value="it">Italiano</option>
@@ -229,7 +229,7 @@ export const SettingsPage: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Timezone
                     </label>
                     <select
@@ -237,7 +237,7 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, timezone: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="Europe/Rome">Europe/Rome</option>
                       <option value="Europe/London">Europe/London</option>
@@ -246,7 +246,7 @@ export const SettingsPage: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Default Currency
                     </label>
                     <select
@@ -254,7 +254,7 @@ export const SettingsPage: React.FC = () => {
                       onChange={(e) =>
                         setGeneralSettings({ ...generalSettings, currency: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="EUR">EUR (€)</option>
                       <option value="USD">USD ($)</option>
@@ -275,7 +275,7 @@ export const SettingsPage: React.FC = () => {
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
                         Email Notifications
@@ -300,7 +300,7 @@ export const SettingsPage: React.FC = () => {
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">Push Notifications</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -323,7 +323,7 @@ export const SettingsPage: React.FC = () => {
                     </label>
                   </div>
 
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-6 mb-3">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mt-6 mb-3">
                     Event Notifications
                   </h4>
 
@@ -349,7 +349,7 @@ export const SettingsPage: React.FC = () => {
                         }
                         className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700 dark:text-gray-300">{item.label}</span>
+                      <span className="text-gray-700 dark:text-gray-200">{item.label}</span>
                     </label>
                   ))}
                 </div>
@@ -366,7 +366,7 @@ export const SettingsPage: React.FC = () => {
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
                         Two-Factor Authentication
@@ -393,7 +393,7 @@ export const SettingsPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Session Timeout (minutes)
                       </label>
                       <input
@@ -405,11 +405,11 @@ export const SettingsPage: React.FC = () => {
                             sessionTimeout: Number(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Password Expiry (days)
                       </label>
                       <input
@@ -421,11 +421,11 @@ export const SettingsPage: React.FC = () => {
                             passwordExpiry: Number(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Max Login Attempts
                       </label>
                       <input
@@ -437,12 +437,12 @@ export const SettingsPage: React.FC = () => {
                             loginAttempts: Number(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
                         Require Strong Password
@@ -481,7 +481,7 @@ export const SettingsPage: React.FC = () => {
 
                 {/* Stripe */}
                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
                     <div className="flex items-center gap-3">
                       <CreditCard className="h-6 w-6 text-purple-500" />
                       <div>
@@ -506,7 +506,7 @@ export const SettingsPage: React.FC = () => {
                   {integrations.stripeEnabled && (
                     <div className="p-4 space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Public Key
                         </label>
                         <div className="flex gap-2">
@@ -516,7 +516,7 @@ export const SettingsPage: React.FC = () => {
                             onChange={(e) =>
                               setIntegrations({ ...integrations, stripePublicKey: e.target.value })
                             }
-                            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                           />
                           <button
                             onClick={() => copyToClipboard(integrations.stripePublicKey)}
@@ -527,7 +527,7 @@ export const SettingsPage: React.FC = () => {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Secret Key
                         </label>
                         <div className="flex gap-2">
@@ -537,7 +537,7 @@ export const SettingsPage: React.FC = () => {
                             onChange={(e) =>
                               setIntegrations({ ...integrations, stripeSecretKey: e.target.value })
                             }
-                            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                           />
                           <button
                             onClick={() => toggleSecret('stripeSecret')}
@@ -557,7 +557,7 @@ export const SettingsPage: React.FC = () => {
 
                 {/* AWS S3 */}
                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
                     <div className="flex items-center gap-3">
                       <Database className="h-6 w-6 text-orange-500" />
                       <div>
@@ -581,7 +581,7 @@ export const SettingsPage: React.FC = () => {
 
                 {/* SMTP */}
                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
                     <div className="flex items-center gap-3">
                       <Mail className="h-6 w-6 text-blue-500" />
                       <div>
@@ -604,7 +604,7 @@ export const SettingsPage: React.FC = () => {
                   {integrations.smtpEnabled && (
                     <div className="p-4 grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           SMTP Host
                         </label>
                         <input
@@ -613,11 +613,11 @@ export const SettingsPage: React.FC = () => {
                           onChange={(e) =>
                             setIntegrations({ ...integrations, smtpHost: e.target.value })
                           }
-                          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           SMTP Port
                         </label>
                         <input
@@ -626,7 +626,7 @@ export const SettingsPage: React.FC = () => {
                           onChange={(e) =>
                             setIntegrations({ ...integrations, smtpPort: Number(e.target.value) })
                           }
-                          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
@@ -646,7 +646,7 @@ export const SettingsPage: React.FC = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">
                       Theme
                     </p>
                     <div className="grid grid-cols-3 gap-3">
@@ -666,7 +666,7 @@ export const SettingsPage: React.FC = () => {
                           )}
                         >
                           <span className="text-2xl">{option.icon}</span>
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                             {option.label}
                           </span>
                         </button>
@@ -675,7 +675,7 @@ export const SettingsPage: React.FC = () => {
                   </div>
 
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">
                       Sidebar Behavior
                     </p>
                     <label className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
@@ -684,7 +684,7 @@ export const SettingsPage: React.FC = () => {
                         defaultChecked
                         className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-700 dark:text-gray-200">
                         Remember sidebar collapsed state
                       </span>
                     </label>
@@ -694,7 +694,7 @@ export const SettingsPage: React.FC = () => {
                         defaultChecked
                         className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-700 dark:text-gray-200">
                         Show tooltips when sidebar is collapsed
                       </span>
                     </label>
@@ -724,7 +724,7 @@ export const SettingsPage: React.FC = () => {
                   ].map((template) => (
                     <div
                       key={template.name}
-                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                     >
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">{template.name}</p>

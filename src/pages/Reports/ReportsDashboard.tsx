@@ -22,8 +22,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useGetDashboardStatsQuery, useGetWorkloadDistributionQuery, type DashboardStats, type WorkloadDistribution } from '@/services/api/admin.api';
+import {
+  useGetRevenueReportsQuery,
+  useGetServiceRequestMetricsQuery,
+  useGetUserStatisticsQuery,
+  useGetSubscriptionMetricsQuery,
+  useExportReportDataMutation,
+} from '@/services/api/reports.api';
 import { cn } from '@/lib/utils';
-import { format, subDays, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,8 +41,6 @@ import {
   FileText,
   CreditCard,
   DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
   BarChart3,
   TrendingUp,
   PieChartIcon,
@@ -58,53 +63,52 @@ export const ReportsDashboard: React.FC = () => {
   // API hooks
   const { data: statsData, isLoading, refetch, isFetching } = useGetDashboardStatsQuery();
   const { data: workloadData } = useGetWorkloadDistributionQuery();
+  const { data: revenueResponse } = useGetRevenueReportsQuery();
+  const { data: requestMetricsResponse } = useGetServiceRequestMetricsQuery();
+  const { data: userStatsResponse } = useGetUserStatisticsQuery();
+  const { data: subscriptionResponse } = useGetSubscriptionMetricsQuery();
+  const [exportReport, { isLoading: isExporting }] = useExportReportDataMutation();
 
   const stats: Partial<DashboardStats> = statsData?.data || {};
   const workload: WorkloadDistribution[] = workloadData?.data || [];
+  const revenueMetrics = revenueResponse?.data;
+  const requestMetrics = requestMetricsResponse?.data;
+  const userStats = userStatsResponse?.data;
+  const subscriptionMetrics = subscriptionResponse?.data;
 
-  // Mock data for charts (in real app, this would come from API)
-  const revenueData = Array.from({ length: 30 }, (_, i) => ({
-    date: format(subDays(new Date(), 29 - i), 'MMM dd'),
-    revenue: Math.floor(Math.random() * 5000) + 1000,
-    subscriptions: Math.floor(Math.random() * 1000) + 200,
-    oneTime: Math.floor(Math.random() * 2000) + 500,
+  // Chart colors palette
+  const CHART_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#64748b', '#06b6d4', '#ec4899'];
+
+  // Revenue trend chart data from API
+  const revenueData = (revenueMetrics?.trendData || []).map((d) => ({
+    date: format(new Date(d.date), 'MMM dd'),
+    revenue: d.amount,
   }));
 
-  const userGrowthData = Array.from({ length: 12 }, (_, i) => ({
-    month: format(subMonths(new Date(), 11 - i), 'MMM'),
-    newUsers: Math.floor(Math.random() * 100) + 20,
-    activeUsers: Math.floor(Math.random() * 500) + 200,
-    churned: Math.floor(Math.random() * 20) + 5,
+  // User growth chart data from API
+  const userGrowthData = (userStats?.registrationTrend || []).map((d) => ({
+    month: format(new Date(d.date), 'MMM'),
+    newUsers: d.count,
+    activeUsers: userStats?.active || 0,
+    churned: userStats?.inactive || 0,
   }));
 
-  const requestsByType = [
-    { name: 'Residence Permit', value: 35, color: '#6366f1' },
-    { name: 'Work Visa', value: 25, color: '#10b981' },
-    { name: 'Family Reunion', value: 20, color: '#f59e0b' },
-    { name: 'Business License', value: 12, color: '#8b5cf6' },
-    { name: 'Other', value: 8, color: '#64748b' },
-  ];
+  // Requests by type from API
+  const requestsByType = Object.entries(requestMetrics?.byServiceType || {}).map(([name, value], i) => ({
+    name,
+    value,
+    color: CHART_COLORS[i % CHART_COLORS.length],
+  }));
 
-  const requestsByStatus = [
-    { name: 'Pending', value: stats.pendingRequests || 0, color: '#f59e0b' },
-    { name: 'In Progress', value: 0, color: '#6366f1' },
-    { name: 'Completed', value: stats.completedToday || 0, color: '#10b981' },
-    { name: 'Total', value: stats.totalServiceRequests || 0, color: '#64748b' },
-  ];
-
-  // Calculate percentage change (mock)
-  const getPercentChange = () => {
-    const change = (Math.random() - 0.3) * 30;
-    return {
-      percentChange: Math.abs(change).toFixed(1),
-      positive: change > 0,
-    };
-  };
+  const requestsByStatus = Object.entries(requestMetrics?.byStatus || {}).map(([name, value], i) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
+    value,
+    color: CHART_COLORS[i % CHART_COLORS.length],
+  }));
 
   // Export report
-  const handleExport = (format: 'csv' | 'pdf') => {
-    // In real app, this would generate and download the report
-    console.log(`Exporting report as ${format}`);
+  const handleExport = (fmt: 'csv' | 'pdf') => {
+    exportReport({ reportType: activeTab, format: fmt });
   };
 
   if (isLoading) {
@@ -154,8 +158,8 @@ export const ReportsDashboard: React.FC = () => {
             <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
           </Button>
           <div className="relative group">
-            <Button className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white shadow-lg shadow-indigo-500/25">
-              <Download className="h-4 w-4 mr-2" />
+            <Button className="bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white shadow-lg shadow-indigo-500/25" disabled={isExporting}>
+              {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
               Export
             </Button>
             <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
@@ -213,31 +217,27 @@ export const ReportsDashboard: React.FC = () => {
             {[
               {
                 label: 'Total Revenue',
-                value: '€45,230',
+                value: revenueMetrics ? `€${revenueMetrics.total.toLocaleString()}` : '€0',
                 icon: DollarSign,
                 color: 'emerald',
-                ...getPercentChange(),
               },
               {
                 label: 'Active Users',
-                value: String(stats.totalUsers ?? 0),
+                value: String(userStats?.active ?? stats.totalUsers ?? 0),
                 icon: Users,
                 color: 'indigo',
-                ...getPercentChange(),
               },
               {
                 label: 'Service Requests',
-                value: String(stats.totalServiceRequests ?? 0),
+                value: String(requestMetrics?.total ?? stats.totalServiceRequests ?? 0),
                 icon: FileText,
                 color: 'violet',
-                ...getPercentChange(),
               },
               {
-                label: 'Pending Requests',
-                value: String(stats.pendingRequests ?? 0),
+                label: 'Active Subscriptions',
+                value: String(subscriptionMetrics?.activeCount ?? 0),
                 icon: CreditCard,
                 color: 'amber',
-                ...getPercentChange(),
               },
             ].map((kpi, index) => {
               const Icon = kpi.icon;
@@ -267,21 +267,6 @@ export const ReportsDashboard: React.FC = () => {
                             kpi.color === 'amber' && 'text-amber-600 dark:text-amber-400'
                           )}
                         />
-                      </div>
-                      <div
-                        className={cn(
-                          'flex items-center gap-1 text-sm font-medium px-2 py-0.5 rounded-full',
-                          kpi.positive 
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400' 
-                            : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400'
-                        )}
-                      >
-                        {kpi.positive ? (
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        ) : (
-                          <ArrowDownRight className="h-3.5 w-3.5" />
-                        )}
-                        {kpi.percentChange}%
                       </div>
                     </div>
                     <p className="text-2xl font-bold text-slate-900 dark:text-white">{kpi.value}</p>
@@ -436,17 +421,9 @@ export const ReportsDashboard: React.FC = () => {
                     />
                     <Legend />
                     <Bar
-                      dataKey="subscriptions"
-                      name="Subscriptions"
-                      stackId="a"
+                      dataKey="revenue"
+                      name="Revenue"
                       fill="#6366f1"
-                      radius={[0, 0, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="oneTime"
-                      name="One-Time"
-                      stackId="a"
-                      fill="#10b981"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -459,30 +436,27 @@ export const ReportsDashboard: React.FC = () => {
               <Card className="border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm shadow-soft animate-fade-up" style={{ animationDelay: '50ms' }}>
                 <CardContent className="p-5">
                   <p className="text-sm text-slate-500 dark:text-slate-400">Total Revenue</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€45,230</p>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                    +12.5% from last period
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(revenueMetrics?.total || 0).toLocaleString()}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    This year: €{(revenueMetrics?.thisYear || 0).toLocaleString()}
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm shadow-soft animate-fade-up" style={{ animationDelay: '100ms' }}>
                 <CardContent className="p-5">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Average Transaction</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€89</p>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                    +5.2% from last period
+                  <p className="text-sm text-slate-500 dark:text-slate-400">This Month</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(revenueMetrics?.thisMonth || 0).toLocaleString()}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    This week: €{(revenueMetrics?.thisWeek || 0).toLocaleString()}
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm shadow-soft animate-fade-up" style={{ animationDelay: '150ms' }}>
                 <CardContent className="p-5">
                   <p className="text-sm text-slate-500 dark:text-slate-400">MRR</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€12,450</p>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                    +8.1% from last month
+                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-1">€{(subscriptionMetrics?.monthlyRecurringRevenue || 0).toLocaleString()}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    {subscriptionMetrics?.activeCount || 0} active subscriptions
                   </p>
                 </CardContent>
               </Card>
@@ -598,36 +572,18 @@ export const ReportsDashboard: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { type: 'Residence Permit', days: 5.2, target: 7 },
-                    { type: 'Work Visa', days: 8.5, target: 10 },
-                    { type: 'Family Reunion', days: 12.3, target: 14 },
-                    { type: 'Business License', days: 3.1, target: 5 },
-                  ].map((item, index) => (
-                    <div key={item.type} className="animate-fade-up" style={{ animationDelay: `${(index + 1) * 50}ms` }}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">{item.type}</span>
-                        <span className="text-sm font-medium text-slate-900 dark:text-white">
-                          {item.days} days
-                        </span>
-                      </div>
-                      <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div
-                          className={cn(
-                            'h-full rounded-full transition-all duration-500',
-                            item.days <= item.target 
-                              ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' 
-                              : 'bg-gradient-to-r from-rose-500 to-rose-400'
-                          )}
-                          style={{ width: `${Math.min((item.days / item.target) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        Target: {item.target} days
-                      </p>
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  <div className="text-center p-6">
+                    <p className="text-4xl font-bold text-slate-900 dark:text-white">
+                      {requestMetrics?.averageProcessingTime?.toFixed(1) || '—'} days
+                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                      Average across all service types
+                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                      Completion rate: {((requestMetrics?.completionRate || 0) * 100).toFixed(1)}%
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

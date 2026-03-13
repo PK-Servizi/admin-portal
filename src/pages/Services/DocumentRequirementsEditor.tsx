@@ -377,7 +377,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
 
                         {/* Name */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Document Name *
                           </label>
                           <input
@@ -393,7 +393,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
 
                         {/* Description */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Description
                           </label>
                           <textarea
@@ -410,7 +410,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                         {/* Type and Required */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                               Document Type
                             </label>
                             <select
@@ -428,7 +428,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
                             </select>
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                               Required
                             </label>
                             <button
@@ -450,7 +450,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
 
                         {/* File Size */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Maximum File Size
                           </label>
                           <div className="flex items-center gap-3">
@@ -474,7 +474,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
 
                         {/* Accepted Formats */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Accepted Formats *
                           </label>
                           <div className="flex flex-wrap gap-2">
@@ -525,7 +525,7 @@ export const DocumentRequirementsEditor: React.FC<DocumentRequirementsEditorProp
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {requirements.length} documents configured
           </div>

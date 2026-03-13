@@ -258,7 +258,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
 
           {/* Form */}
           {isFormOpen && (
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
               <h3 className="font-medium text-gray-900 dark:text-white mb-4">
                 {editingFaq?.id ? 'Edit FAQ' : 'New FAQ'}
               </h3>
@@ -280,7 +280,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
               <div className="space-y-4">
                 {/* Question */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Question *
                   </label>
                   <input
@@ -294,7 +294,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
 
                 {/* Answer */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Answer *
                   </label>
                   <textarea
@@ -309,7 +309,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   {/* Category */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       Category
                     </label>
                     <select
@@ -327,7 +327,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
 
                   {/* Active Toggle */}
                   <div className="flex items-center gap-3">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                       Active
                     </label>
                     <button
@@ -352,7 +352,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
                 <div className="flex justify-end gap-3 pt-2">
                   <button
                     onClick={handleCancel}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
@@ -398,7 +398,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
                       "border rounded-lg p-4",
                       faq.isActive 
                         ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
-                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 opacity-60"
+                        : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50 opacity-60"
                     )}
                   >
                     <div className="flex items-start gap-4">
@@ -419,7 +419,7 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
                               {faq.answer}
                             </p>
                             <div className="mt-2 flex items-center gap-2">
-                              <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                              <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                                 {FAQ_CATEGORIES.find(c => c.value === faq.category)?.label || faq.category}
                               </span>
                               {!faq.isActive && (
@@ -471,13 +471,13 @@ export const FAQEditor: React.FC<FAQEditorProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {faqs.length} FAQ{faqs.length !== 1 ? 's' : ''} total
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
             Close
           </button>

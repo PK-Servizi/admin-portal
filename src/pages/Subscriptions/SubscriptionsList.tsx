@@ -298,7 +298,7 @@ export const SubscriptionsList: React.FC = () => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -309,7 +309,7 @@ export const SubscriptionsList: React.FC = () => {
               setStatus(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             {SUBSCRIPTION_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>
@@ -324,7 +324,7 @@ export const SubscriptionsList: React.FC = () => {
               setSelectedPlan(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Plans</option>
             {plans.map((plan: SubscriptionPlan) => (
@@ -340,7 +340,7 @@ export const SubscriptionsList: React.FC = () => {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-900/50">
+            <thead className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   User
@@ -560,7 +560,7 @@ export const SubscriptionsList: React.FC = () => {
                     {selectedSubscription.plan.features.map((feature: string, index: number) => (
                       <li
                         key={index}
-                        className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+                        className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
                       >
                         <CheckCircle className="h-4 w-4 text-green-500" />
                         {feature}
@@ -616,14 +616,14 @@ export const SubscriptionsList: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Cancellation Reason (optional)
               </label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-red-500 resize-none"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-red-500 resize-none"
                 placeholder="Reason for cancellation..."
               />
             </div>

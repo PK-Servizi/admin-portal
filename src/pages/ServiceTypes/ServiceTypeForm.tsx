@@ -127,7 +127,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
             >
               Name <span className="text-red-500">*</span>
             </label>
@@ -140,7 +140,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               onBlur={() => handleBlur('name')}
               placeholder="e.g. Tax Services"
               className={cn(
-                'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors',
+                'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors',
                 touched.name && errors.name
                   ? 'border-red-500'
                   : 'border-gray-200 dark:border-gray-700'
@@ -155,7 +155,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
           <div>
             <label
               htmlFor="code"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
             >
               Code
             </label>
@@ -166,7 +166,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               value={formData.code}
               onChange={handleChange}
               placeholder="e.g. FISCAL"
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Unique code to identify the service type
@@ -177,7 +177,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
             >
               Description
             </label>
@@ -188,7 +188,7 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               onChange={handleChange}
               rows={3}
               placeholder="Service type description..."
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none"
             />
           </div>
 
@@ -204,14 +204,14 @@ export const ServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
             </label>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
               {formData.isActive ? 'Active' : 'Inactive'}
             </span>
           </div>
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white/50">
           <button
             type="button"
             onClick={onClose}

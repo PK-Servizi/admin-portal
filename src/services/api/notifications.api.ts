@@ -190,6 +190,49 @@ export const notificationsApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    // ========================
+    // Admin Notification Management
+    // ========================
+
+    // Send notification to a specific user
+    sendNotification: builder.mutation<
+      ApiResponse<void>,
+      { userId: string; title: string; message: string; type?: string; userEmail?: string }
+    >({
+      query: (data) => ({
+        url: '/notifications/send',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: API_TAGS.Notification, id: 'LIST' }],
+    }),
+
+    // Broadcast notification to all users
+    broadcastNotification: builder.mutation<
+      ApiResponse<void>,
+      { title: string; message: string; type?: string }
+    >({
+      query: (data) => ({
+        url: '/notifications/broadcast',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: API_TAGS.Notification, id: 'LIST' }],
+    }),
+
+    // Send notification to all users with a specific role
+    sendToRole: builder.mutation<
+      ApiResponse<void>,
+      { roleId: string; title: string; message: string; type?: string }
+    >({
+      query: (data) => ({
+        url: '/notifications/send-to-role',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [{ type: API_TAGS.Notification, id: 'LIST' }],
+    }),
   }),
   overrideExisting: false,
 });
@@ -202,4 +245,8 @@ export const {
   useDeleteNotificationMutation,
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
+  // Admin
+  useSendNotificationMutation,
+  useBroadcastNotificationMutation,
+  useSendToRoleMutation,
 } = notificationsApi;

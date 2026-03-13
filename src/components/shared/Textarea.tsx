@@ -28,7 +28,7 @@ export const Textarea: React.FC<TextareaProps> = ({
   return (
     <div className={`textarea-wrapper ${fullWidth ? 'w-full' : ''}`}>
       {label && (
-        <label htmlFor={textareaId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={textareaId} className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -41,9 +41,9 @@ export const Textarea: React.FC<TextareaProps> = ({
           px-3 py-2
           ${error 
             ? 'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500' 
-            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+            : 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500'
           }
-          ${props.disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+          ${props.disabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : 'bg-white dark:bg-gray-900'}
           ${!resizable ? 'resize-none' : 'resize-y'}
           ${className}
         `}

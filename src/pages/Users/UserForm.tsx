@@ -7,9 +7,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetUserByIdQuery,
   useUpdateUserMutation,
+  useCreateUserMutation,
 } from '@/services/api/users-admin.api';
-import { useRegisterMutation } from '@/services/api/auth.api';
-import { useGetAllRolesQuery } from '@/services/api/roles.api';
+import { useGetAllRolesQuery, useAssignRoleToUserMutation } from '@/services/api/roles.api';
 import { cn } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -59,8 +59,9 @@ export const UserForm: React.FC = () => {
     skip: !isEditing,
   });
   const { data: rolesData } = useGetAllRolesQuery();
-  const [register, { isLoading: isCreating }] = useRegisterMutation();
+  const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const [assignRoleToUser] = useAssignRoleToUserMutation();
 
   const roles = rolesData?.data || [];
   const isSubmitting = isCreating || isUpdating;
@@ -130,10 +131,9 @@ export const UserForm: React.FC = () => {
     try {
       if (isEditing) {
         const updateData: Record<string, string> = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          fullName: `${formData.firstName} ${formData.lastName}`.trim(),
           email: formData.email,
-          phoneNumber: formData.phoneNumber,
+          phone: formData.phoneNumber,
         };
         
         if (formData.password) {
@@ -141,14 +141,24 @@ export const UserForm: React.FC = () => {
         }
 
         await updateUser({ id: id!, data: updateData }).unwrap();
+
+        // Update role if changed
+        if (formData.roleId && formData.roleId !== userData?.data?.role?.id) {
+          await assignRoleToUser({ userId: id!, data: { roleId: formData.roleId } }).unwrap();
+        }
       } else {
-        await register({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+        const result = await createUser({
           email: formData.email,
           password: formData.password,
-          phoneNumber: formData.phoneNumber,
+          fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+          phone: formData.phoneNumber || undefined,
+          roleId: formData.roleId || undefined,
         }).unwrap();
+
+        // Assign role if createUser didn't handle it
+        if (formData.roleId && result.data?.id) {
+          await assignRoleToUser({ userId: result.data.id, data: { roleId: formData.roleId } }).unwrap();
+        }
       }
 
       navigate('/users');
@@ -207,7 +217,7 @@ export const UserForm: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -215,7 +225,7 @@ export const UserForm: React.FC = () => {
                   value={formData.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
                   className={cn(
-                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                     errors.firstName
                       ? 'border-red-500'
                       : 'border-gray-200 dark:border-gray-700'
@@ -227,7 +237,7 @@ export const UserForm: React.FC = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -235,7 +245,7 @@ export const UserForm: React.FC = () => {
                   value={formData.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   className={cn(
-                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                     errors.lastName
                       ? 'border-red-500'
                       : 'border-gray-200 dark:border-gray-700'
@@ -257,7 +267,7 @@ export const UserForm: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -265,7 +275,7 @@ export const UserForm: React.FC = () => {
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   className={cn(
-                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                    'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                     errors.email
                       ? 'border-red-500'
                       : 'border-gray-200 dark:border-gray-700'
@@ -277,7 +287,7 @@ export const UserForm: React.FC = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Phone
                 </label>
                 <div className="relative">
@@ -286,7 +296,7 @@ export const UserForm: React.FC = () => {
                     type="tel"
                     value={formData.phoneNumber}
                     onChange={(e) => handleChange('phoneNumber', e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="+39 123 456 7890"
                   />
                 </div>
@@ -301,14 +311,14 @@ export const UserForm: React.FC = () => {
               Role & Permissions
             </h2>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                 Role <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.roleId}
                 onChange={(e) => handleChange('roleId', e.target.value)}
                 className={cn(
-                  'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                  'w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                   errors.roleId
                     ? 'border-red-500'
                     : 'border-gray-200 dark:border-gray-700'
@@ -340,7 +350,7 @@ export const UserForm: React.FC = () => {
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Password {!isEditing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="relative">
@@ -349,7 +359,7 @@ export const UserForm: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleChange('password', e.target.value)}
                     className={cn(
-                      'w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                      'w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                       errors.password
                         ? 'border-red-500'
                         : 'border-gray-200 dark:border-gray-700'
@@ -373,7 +383,7 @@ export const UserForm: React.FC = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Confirm Password {!isEditing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="relative">
@@ -382,7 +392,7 @@ export const UserForm: React.FC = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleChange('confirmPassword', e.target.value)}
                     className={cn(
-                      'w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-gray-900 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
+                      'w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
                       errors.confirmPassword
                         ? 'border-red-500'
                         : 'border-gray-200 dark:border-gray-700'

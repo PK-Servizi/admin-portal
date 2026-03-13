@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useGetAuditLogsQuery, type AuditLog } from '@/services/api/admin.api';
+import { useGetAuditLogsQuery, useExportAuditLogsMutation, type AuditLog } from '@/services/api/admin.api';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
@@ -78,6 +78,7 @@ export const AuditLogs: React.FC = () => {
     startDate: dateFrom || undefined,
     endDate: dateTo || undefined,
   });
+  const [exportAuditLogs, { isLoading: isExporting }] = useExportAuditLogsMutation();
 
   const logs: AuditLog[] = data?.data || [];
   const totalPages = data?.pagination?.pages || 1;
@@ -152,30 +153,17 @@ export const AuditLogs: React.FC = () => {
     );
   };
 
-  // Export logs
+  // Export logs via server-side endpoint
   const handleExport = () => {
-    const csvContent = [
-      ['Timestamp', 'User', 'Action', 'Resource', 'Resource ID', 'IP Address', 'Details'].join(','),
-      ...logs.map((log) =>
-        [
-          format(new Date(log.createdAt), 'yyyy-MM-dd HH:mm:ss'),
-          log.userEmail || log.userId,
-          log.action,
-          log.resource,
-          log.resourceId,
-          log.ipAddress,
-          JSON.stringify(log.details || {}).replace(/,/g, ';'),
-        ].join(',')
-      ),
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `audit-logs-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    exportAuditLogs({
+      format: 'csv',
+      filters: {
+        action: actionType || undefined,
+        resource: resource || undefined,
+        startDate: dateFrom || undefined,
+        endDate: dateTo || undefined,
+      },
+    });
   };
 
   if (isLoading) {
@@ -217,8 +205,9 @@ export const AuditLogs: React.FC = () => {
             onClick={handleExport}
             variant="outline"
             className="border-slate-200 dark:border-slate-700"
+            disabled={isExporting}
           >
-            <Download className="h-4 w-4 mr-2" />
+            {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
             Export
           </Button>
         </div>
@@ -239,7 +228,7 @@ export const AuditLogs: React.FC = () => {
                   setSearchTerm(e.target.value);
                   setPage(1);
                 }}
-                className="pl-10 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                className="pl-10 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white border-slate-200 dark:border-slate-700"
               />
             </div>
 
@@ -251,7 +240,7 @@ export const AuditLogs: React.FC = () => {
                   setActionType(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
               >
                 {ACTION_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -266,7 +255,7 @@ export const AuditLogs: React.FC = () => {
                   setResource(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
               >
                 {RESOURCES.map((res) => (
                   <option key={res.value} value={res.value}>
@@ -302,7 +291,7 @@ export const AuditLogs: React.FC = () => {
                     setDateFrom(e.target.value);
                     setPage(1);
                   }}
-                  className="px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                  className="px-3 py-1.5 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -314,7 +303,7 @@ export const AuditLogs: React.FC = () => {
                     setDateTo(e.target.value);
                     setPage(1);
                 }}
-                className="px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
+                className="px-3 py-1.5 bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
               />
             </div>
             {(dateFrom || dateTo) && (
@@ -337,7 +326,7 @@ export const AuditLogs: React.FC = () => {
       <Card className="border-0 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm shadow-soft overflow-hidden animate-fade-up" style={{ animationDelay: '100ms' }}>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 dark:bg-slate-900/50">
+            <thead className="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white/50">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Timestamp

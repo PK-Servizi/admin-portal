@@ -15,6 +15,8 @@ export interface PaymentFilters {
   userId?: string;
   minAmount?: number;
   maxAmount?: number;
+  search?: string;
+  paymentMethod?: string;
 }
 
 export interface RefundData {

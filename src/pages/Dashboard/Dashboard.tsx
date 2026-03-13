@@ -10,8 +10,14 @@ import {
   useGetDashboardStatsQuery,
   useGetPendingCountQuery,
   useGetWorkloadDistributionQuery,
+  useGetAuditLogsQuery,
 } from '@/services/api/admin.api';
+import {
+  useGetRevenueReportsQuery,
+  useGetServiceRequestMetricsQuery,
+} from '@/services/api/reports.api';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import {
   Users,
   ClipboardList,
@@ -49,35 +55,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-
-// Mock data for charts (will be replaced with real API data)
-const revenueData = [
-  { month: 'Jan', revenue: 4000 },
-  { month: 'Feb', revenue: 3000 },
-  { month: 'Mar', revenue: 5000 },
-  { month: 'Apr', revenue: 4500 },
-  { month: 'May', revenue: 6000 },
-  { month: 'Jun', revenue: 5500 },
-  { month: 'Jul', revenue: 7000 },
-];
-
-// Updated with indigo palette colors
-const requestsByStatus = [
-  { name: 'Pending', value: 35, color: '#f59e0b' },
-  { name: 'In Progress', value: 25, color: '#6366f1' },
-  { name: 'Completed', value: 30, color: '#10b981' },
-  { name: 'Cancelled', value: 10, color: '#ef4444' },
-];
-
-const requestsOverTime = [
-  { day: 'Mon', requests: 12 },
-  { day: 'Tue', requests: 19 },
-  { day: 'Wed', requests: 15 },
-  { day: 'Thu', requests: 22 },
-  { day: 'Fri', requests: 18 },
-  { day: 'Sat', requests: 8 },
-  { day: 'Sun', requests: 5 },
-];
 
 // Chart colors matching our design system
 const CHART_COLORS = {
@@ -297,55 +274,10 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   );
 };
 
-interface ActivityItem {
-  id: string;
-  type: 'request' | 'user' | 'payment' | 'document';
-  title: string;
-  description: string;
-  time: string;
-}
-
-const recentActivity: ActivityItem[] = [
-  {
-    id: '1',
-    type: 'request',
-    title: 'New Service Request',
-    description: 'John Doe submitted a new visa application',
-    time: '2 minutes ago',
-  },
-  {
-    id: '2',
-    type: 'payment',
-    title: 'Payment Received',
-    description: 'Payment of €150 received from Maria Rossi',
-    time: '15 minutes ago',
-  },
-  {
-    id: '3',
-    type: 'document',
-    title: 'Document Uploaded',
-    description: 'ID verification document uploaded by Carlo Bianchi',
-    time: '1 hour ago',
-  },
-  {
-    id: '4',
-    type: 'user',
-    title: 'New User Registration',
-    description: 'Anna Verdi created a new account',
-    time: '2 hours ago',
-  },
-  {
-    id: '5',
-    type: 'request',
-    title: 'Request Completed',
-    description: 'Tax assistance request marked as completed',
-    time: '3 hours ago',
-  },
-];
-
-const getActivityIcon = (type: ActivityItem['type']) => {
-  switch (type) {
-    case 'request':
+const getResourceIcon = (resource: string) => {
+  switch (resource) {
+    case 'service-request':
+    case 'service_request':
       return <ClipboardList className="h-4 w-4" />;
     case 'user':
       return <Users className="h-4 w-4" />;
@@ -358,9 +290,10 @@ const getActivityIcon = (type: ActivityItem['type']) => {
   }
 };
 
-const getActivityColor = (type: ActivityItem['type']) => {
-  switch (type) {
-    case 'request':
+const getResourceColor = (resource: string) => {
+  switch (resource) {
+    case 'service-request':
+    case 'service_request':
       return 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400';
     case 'user':
       return 'bg-violet-100 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400';
@@ -377,10 +310,40 @@ export const Dashboard: React.FC = () => {
   const { data: statsData, isLoading: statsLoading } = useGetDashboardStatsQuery();
   const { data: pendingData, isLoading: pendingLoading } = useGetPendingCountQuery();
   const { data: workloadData, isLoading: workloadLoading } = useGetWorkloadDistributionQuery();
+  const { data: revenueResponse } = useGetRevenueReportsQuery();
+  const { data: requestMetricsResponse } = useGetServiceRequestMetricsQuery();
+  const { data: auditLogsData } = useGetAuditLogsQuery({ take: 5 });
 
   const stats = statsData?.data;
   const pending = pendingData?.data;
   const workload = workloadData?.data || [];
+  const revenueMetrics = revenueResponse?.data;
+  const requestMetrics = requestMetricsResponse?.data;
+
+  // Chart data derived from API
+  const STATUS_COLORS: Record<string, string> = {
+    pending: '#f59e0b',
+    in_progress: '#6366f1',
+    completed: '#10b981',
+    cancelled: '#ef4444',
+    rejected: '#f43f5e',
+  };
+
+  const revenueData = (revenueMetrics?.trendData || []).map((d) => ({
+    month: format(new Date(d.date), 'MMM dd'),
+    revenue: d.amount,
+  }));
+
+  const requestsByStatus = Object.entries(requestMetrics?.byStatus || {}).map(([name, value]) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
+    value,
+    color: STATUS_COLORS[name] || '#64748b',
+  }));
+
+  const requestsOverTime = (requestMetrics?.trendData || []).map((d) => ({
+    day: format(new Date(d.date), 'EEE'),
+    requests: d.count,
+  }));
 
   const isLoading = statsLoading || pendingLoading || workloadLoading;
 
@@ -427,8 +390,6 @@ export const Dashboard: React.FC = () => {
         <StatCard
           title="Total Users"
           value={stats?.totalUsers?.toLocaleString() || '0'}
-          change={12}
-          changeLabel="vs last month"
           icon={<Users className="h-6 w-6" />}
           variant="indigo"
           link="/users"
@@ -437,8 +398,6 @@ export const Dashboard: React.FC = () => {
         <StatCard
           title="Service Requests"
           value={stats?.totalServiceRequests?.toLocaleString() || '0'}
-          change={8}
-          changeLabel="vs last month"
           icon={<ClipboardList className="h-6 w-6" />}
           variant="violet"
           link="/service-requests"
@@ -455,8 +414,6 @@ export const Dashboard: React.FC = () => {
         <StatCard
           title="Completed Today"
           value={stats?.completedToday || 0}
-          change={15}
-          changeLabel="vs yesterday"
           icon={<CheckCircle className="h-6 w-6" />}
           variant="emerald"
           delay={150}
@@ -476,8 +433,6 @@ export const Dashboard: React.FC = () => {
         <StatCard
           title="This Month"
           value={`€${stats?.revenue?.thisMonth?.toLocaleString() || '0'}`}
-          change={22}
-          changeLabel="vs last month"
           icon={<TrendingUp className="h-6 w-6" />}
           variant="indigo"
           delay={250}
@@ -521,7 +476,7 @@ export const Dashboard: React.FC = () => {
           <QuickActionCard
             title="Today's Appointments"
             description="Scheduled for today"
-            count={5}
+            count={0}
             icon={<Calendar className="h-5 w-5 text-white" />}
             variant="blue"
             link="/appointments"
@@ -706,26 +661,26 @@ export const Dashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivity.map((activity) => (
+              {(auditLogsData?.data || []).map((log) => (
                 <div 
-                  key={activity.id} 
+                  key={log.id} 
                   className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group"
                 >
                   <div className={cn(
                     'p-2 rounded-xl transition-transform group-hover:scale-110',
-                    getActivityColor(activity.type)
+                    getResourceColor(log.resource)
                   )}>
-                    {getActivityIcon(activity.type)}
+                    {getResourceIcon(log.resource)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                      {activity.title}
+                      {log.action.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {activity.description}
+                      {log.userEmail || 'System'} — {log.resource}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
-                      {activity.time}
+                      {new Date(log.createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
