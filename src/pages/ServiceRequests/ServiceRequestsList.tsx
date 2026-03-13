@@ -104,6 +104,7 @@ export const ServiceRequestsListPage: React.FC = () => {
 
   // Dropdown state
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
   // API hooks
   const { data, isLoading, isFetching, refetch } = useGetAllRequestsQuery({
@@ -579,9 +580,15 @@ export const ServiceRequestsListPage: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="relative">
                         <button
-                          onClick={() =>
-                            setOpenDropdown(openDropdown === request.id ? null : request.id)
-                          }
+                          onClick={(e) => {
+                            if (openDropdown === request.id) {
+                              setOpenDropdown(null);
+                            } else {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setDropdownPosition({ top: rect.bottom + 4, left: rect.right - 192 });
+                              setOpenDropdown(request.id);
+                            }
+                          }}
                           className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <MoreVertical className="h-5 w-5" />
@@ -593,7 +600,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                               className="fixed inset-0 z-10"
                               onClick={() => setOpenDropdown(null)}
                             />
-                            <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                            <div className="fixed w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20" style={{ top: dropdownPosition.top, left: dropdownPosition.left }}>
                               <Link
                                 to={`/service-requests/${request.id}`}
                                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"

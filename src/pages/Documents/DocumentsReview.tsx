@@ -254,7 +254,7 @@ export const DocumentsReview: React.FC = () => {
 
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(doc.uploadedAt), 'MMM dd, yyyy HH:mm')}
+                  {format(new Date(doc.uploadedAt || doc.createdAt || new Date()), 'MMM dd, yyyy HH:mm')}
                 </div>
               </div>
 

@@ -321,19 +321,28 @@ export const ServiceRequestDetail: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <FileText className="h-5 w-5 text-blue-500" />
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{doc.filename || doc.originalName}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{doc.originalFilename || doc.filename || doc.originalName}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
+                          Uploaded {new Date(doc.createdAt || doc.uploadedAt || '').toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <button
+                        onClick={() => doc.filePath && window.open(doc.filePath, '_blank')}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
+                        title="View"
+                      >
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <a
+                        href={doc.filePath || '#'}
+                        download={doc.originalFilename || doc.filename}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 inline-flex"
+                        title="Download"
+                      >
                         <Download className="h-4 w-4" />
-                      </button>
+                      </a>
                     </div>
                   </div>
                 ))}

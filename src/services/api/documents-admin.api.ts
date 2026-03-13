@@ -11,16 +11,20 @@ export interface Document {
   userId: string;
   serviceRequestId?: string;
   category: string;
-  fileName: string;
-  fileUrl: string;
+  fileName?: string;
+  filename?: string;
+  fileUrl?: string;
+  filePath?: string;
   fileSize: number;
   mimeType: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewedBy?: string;
   reviewedAt?: string;
   notes?: string;
-  uploadedAt: string;
+  uploadedAt?: string;
   createdAt?: string;
+  originalFilename?: string;
+  originalName?: string;
   // Convenience aliases
   url?: string;
   type?: string;

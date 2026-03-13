@@ -336,16 +336,22 @@ export interface Document {
   id: string;
   userId: string;
   serviceRequestId?: string;
-  type: string;
-  filename: string;
-  originalName: string;
+  type?: string;
+  category?: string;
+  filename?: string;
+  originalName?: string;
+  originalFilename?: string;
   mimeType: string;
-  size: number;
+  size?: number;
+  fileSize?: number;
   url?: string;
+  filePath?: string;
   s3Key?: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewNotes?: string;
-  uploadedAt: string;
+  adminNotes?: string;
+  uploadedAt?: string;
+  createdAt?: string;
   reviewedAt?: string;
 }
 
