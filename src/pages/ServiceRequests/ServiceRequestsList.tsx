@@ -35,6 +35,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { PAGINATION, STATUS, PRIORITY } from '@/constants';
+import { STATUS_CONFIG } from '@/types/service-request.types';
 
 interface RequestFilters {
   search: string;
@@ -45,15 +46,21 @@ interface RequestFilters {
 }
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
-  in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400',
+  submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
+  payment_pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
+  awaiting_form: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
+  awaiting_documents: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400',
+  in_review: 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400',
+  missing_documents: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400',
   completed: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400',
-  cancelled: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400',
+  closed: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400',
   rejected: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
 };
 
 const priorityColors: Record<string, string> = {
   low: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400',
+  normal: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
   medium: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400',
   high: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400',
   urgent: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
@@ -61,13 +68,19 @@ const priorityColors: Record<string, string> = {
 
 const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
   switch (status) {
-    case 'pending':
+    case 'draft':
+      return <FileText className="h-4 w-4" />;
+    case 'submitted':
+    case 'payment_pending':
+    case 'awaiting_form':
+    case 'awaiting_documents':
       return <Clock className="h-4 w-4" />;
-    case 'in_progress':
+    case 'in_review':
+    case 'missing_documents':
       return <AlertCircle className="h-4 w-4" />;
     case 'completed':
       return <CheckCircle className="h-4 w-4" />;
-    case 'cancelled':
+    case 'closed':
     case 'rejected':
       return <XCircle className="h-4 w-4" />;
     default:
@@ -290,7 +303,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                 <option value="">Change Status...</option>
                 {Object.entries(STATUS.SERVICE_REQUEST).map(([key, value]) => (
                   <option key={key} value={value}>
-                    {key.replace(/_/g, ' ')}
+                    {STATUS_CONFIG[value]?.label || key.replace(/_/g, ' ')}
                   </option>
                 ))}
               </select>
@@ -372,7 +385,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                   <option value="">All Statuses</option>
                   {Object.entries(STATUS.SERVICE_REQUEST).map(([key, value]) => (
                     <option key={key} value={value}>
-                      {key.replace(/_/g, ' ')}
+                      {STATUS_CONFIG[value]?.label || key.replace(/_/g, ' ')}
                     </option>
                   ))}
                 </select>
@@ -407,7 +420,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                   <option value="unassigned">Unassigned</option>
                   {operators.map((op) => (
                     <option key={op.id} value={op.id}>
-                      {op.firstName} {op.lastName}
+                      {op.fullName || `${op.firstName || ''} ${op.lastName || ''}`.trim()}
                     </option>
                   ))}
                 </select>
@@ -515,11 +528,11 @@ export const ServiceRequestsListPage: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">
-                          {request.user?.firstName?.charAt(0) || 'U'}
+                          {(request.user?.fullName || request.user?.firstName || 'U').charAt(0)}
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            {request.user?.firstName} {request.user?.lastName}
+                            {request.user?.fullName || `${request.user?.firstName || ''} ${request.user?.lastName || ''}`.trim() || 'Unknown'}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
                             {request.user?.email}
@@ -531,11 +544,11 @@ export const ServiceRequestsListPage: React.FC = () => {
                       <span
                         className={cn(
                           'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium',
-                          statusColors[request.status] || statusColors.pending
+                          statusColors[request.status] || 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400'
                         )}
                       >
                         <StatusIcon status={request.status} />
-                        {request.status.replace(/_/g, ' ')}
+                        {STATUS_CONFIG[request.status]?.label || request.status.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -549,13 +562,13 @@ export const ServiceRequestsListPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {request.assignedTo ? (
+                      {request.assignedOperator ? (
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center text-green-600 text-xs font-medium">
-                            {request.assignedTo.firstName?.charAt(0)}
+                            {(request.assignedOperator.fullName || request.assignedOperator.firstName || 'O').charAt(0)}
                           </div>
                           <span className="text-sm text-gray-700 dark:text-gray-200">
-                            {request.assignedTo.firstName} {request.assignedTo.lastName}
+                            {request.assignedOperator.fullName || `${request.assignedOperator.firstName || ''} ${request.assignedOperator.lastName || ''}`.trim()}
                           </span>
                         </div>
                       ) : (
@@ -645,7 +658,7 @@ export const ServiceRequestsListPage: React.FC = () => {
                                           : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200'
                                       )}
                                     >
-                                      {key.replace(/_/g, ' ')}
+                                      {STATUS_CONFIG[value]?.label || key.replace(/_/g, ' ')}
                                     </button>
                                   ))}
                                 </div>
@@ -747,25 +760,42 @@ export const ServiceRequestsListPage: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Assign Operator
             </h3>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {operators.map((operator) => (
-                <button
-                  key={operator.id}
-                  onClick={() => handleAssignOperator(selectedRequest, operator.id)}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                  Select Operator
+                </label>
+                <select
+                  defaultValue=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleAssignOperator(selectedRequest, e.target.value);
+                    }
+                  }}
                   disabled={isAssigning}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                  className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-medium">
-                    {operator.firstName?.charAt(0)}
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {operator.firstName} {operator.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{operator.email}</p>
-                  </div>
-                </button>
-              ))}
+                  <option value="" disabled>
+                    -- Choose an operator --
+                  </option>
+                  {operators.map((operator) => (
+                    <option key={operator.id} value={operator.id}>
+                      {operator.fullName || `${operator.firstName || ''} ${operator.lastName || ''}`.trim()} — {operator.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {isAssigning && (
+                <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Assigning...
+                </div>
+              )}
+              {operators.length === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No operators found. Please ensure users with the operator role exist.
+                </p>
+              )}
             </div>
             <div className="mt-4 flex justify-end">
               <button

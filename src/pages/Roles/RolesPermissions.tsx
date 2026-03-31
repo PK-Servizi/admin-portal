@@ -312,7 +312,7 @@ export const RolesPermissions: React.FC = () => {
                 </p>
 
                 <div className="flex flex-wrap gap-1.5">
-                  {role.permissions?.slice(0, 5).map((permission) => (
+                  {Array.isArray(role.permissions) && role.permissions.slice(0, 5).map((permission) => (
                     <span
                       key={typeof permission === 'string' ? permission : permission.id}
                       className="inline-flex items-center px-2 py-0.5 rounded-md text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
@@ -320,7 +320,7 @@ export const RolesPermissions: React.FC = () => {
                     {typeof permission === 'string' ? permission : permission.name}
                   </span>
                 ))}
-                {role.permissions?.length > 5 && (
+                {Array.isArray(role.permissions) && role.permissions.length > 5 && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400">
                     +{role.permissions.length - 5} more
                   </span>

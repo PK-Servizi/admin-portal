@@ -302,6 +302,7 @@ export interface RequestStatusHistory {
   fromStatus: string;
   toStatus: string;
   reason?: string;
+  notes?: string;
   changedBy?: User;
   changedById: string;
   createdAt: string;

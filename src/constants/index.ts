@@ -60,10 +60,15 @@ export const FILE_UPLOAD = {
 // Status Values
 export const STATUS = {
   SERVICE_REQUEST: {
-    PENDING: 'pending',
-    IN_PROGRESS: 'in_progress',
+    DRAFT: 'draft',
+    SUBMITTED: 'submitted',
+    PAYMENT_PENDING: 'payment_pending',
+    AWAITING_FORM: 'awaiting_form',
+    AWAITING_DOCUMENTS: 'awaiting_documents',
+    IN_REVIEW: 'in_review',
+    MISSING_DOCUMENTS: 'missing_documents',
     COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
+    CLOSED: 'closed',
     REJECTED: 'rejected',
   },
   SUBSCRIPTION: {
@@ -100,6 +105,7 @@ export const STATUS = {
 // Priority Levels
 export const PRIORITY = {
   LOW: 'low',
+  NORMAL: 'normal',
   MEDIUM: 'medium',
   HIGH: 'high',
   URGENT: 'urgent',

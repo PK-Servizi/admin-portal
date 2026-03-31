@@ -162,6 +162,10 @@ export const adminApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getDocumentViewUrl: builder.query<ApiResponse<{ url: string }>, string>({
+      query: (docId) => `/admin/requests/documents/${docId}/view-url`,
+    }),
+
     getOperatorRequests: builder.query<
       PaginatedApiResponse<ServiceRequest[]>,
       { operatorId: string; filters?: Record<string, string | number> }
@@ -194,7 +198,7 @@ export const adminApi = baseApi.injectEndpoints({
         // Optimistic update
         const patchResult = dispatch(
           adminApi.util.updateQueryData('getRequestDetail', id, (draft) => {
-            draft.data.assignedToId = data.operatorId;
+            draft.data.assignedOperatorId = data.operatorId;
           })
         );
 
@@ -361,6 +365,7 @@ export const {
   useLazyGetAllRequestsQuery,
   useGetRequestDetailQuery,
   useLazyGetRequestDetailQuery,
+  useLazyGetDocumentViewUrlQuery,
   useGetOperatorRequestsQuery,
   useAssignToOperatorMutation,
   useUpdateRequestStatusMutation,

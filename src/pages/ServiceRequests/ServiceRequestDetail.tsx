@@ -11,6 +11,7 @@ import {
   useAssignToOperatorMutation,
   useAddInternalNoteMutation,
   useRequestAdditionalDocumentsMutation,
+  useLazyGetDocumentViewUrlQuery,
 } from '@/services/api/admin.api';
 import { useGetAllUsersQuery } from '@/services/api/users-admin.api';
 import { cn } from '@/lib/utils';
@@ -33,30 +34,54 @@ import {
   Plus,
 } from 'lucide-react';
 import { STATUS } from '@/constants';
+import { STATUS_CONFIG } from '@/types/service-request.types';
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
-  in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
+  draft: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
+  submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
+  payment_pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+  awaiting_form: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
+  awaiting_documents: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
+  in_review: 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-400 border-purple-200 dark:border-purple-500/30',
+  missing_documents: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 border-orange-200 dark:border-orange-500/30',
   completed: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400 border-green-200 dark:border-green-500/30',
-  cancelled: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
+  closed: 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
   rejected: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 border-red-200 dark:border-red-500/30',
 };
 
 const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, className }) => {
   switch (status) {
-    case 'pending':
+    case 'draft':
+      return <FileText className={cn('h-5 w-5', className)} />;
+    case 'submitted':
+    case 'payment_pending':
+    case 'awaiting_form':
+    case 'awaiting_documents':
       return <Clock className={cn('h-5 w-5', className)} />;
-    case 'in_progress':
+    case 'in_review':
+    case 'missing_documents':
       return <AlertCircle className={cn('h-5 w-5', className)} />;
     case 'completed':
       return <CheckCircle className={cn('h-5 w-5', className)} />;
-    case 'cancelled':
+    case 'closed':
     case 'rejected':
       return <XCircle className={cn('h-5 w-5', className)} />;
     default:
       return <FileText className={cn('h-5 w-5', className)} />;
   }
 };
+
+/** Parse the backend internalNotes string into structured note entries */
+function parseInternalNotes(notes: string | null | undefined): Array<{ timestamp: string; author: string; content: string }> {
+  if (!notes) return [];
+  return notes.split('\n').filter(Boolean).map((line) => {
+    const match = line.match(/^\[(.+?)\]\s*Admin\s+(.+?):\s*(.+)$/);
+    if (match) {
+      return { timestamp: match[1], author: match[2], content: match[3] };
+    }
+    return { timestamp: '', author: '', content: line };
+  });
+}
 
 export const ServiceRequestDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -77,6 +102,7 @@ export const ServiceRequestDetail: React.FC = () => {
   const [assignOperator, { isLoading: isAssigning }] = useAssignToOperatorMutation();
   const [addNote, { isLoading: isAddingNote }] = useAddInternalNoteMutation();
   const [requestDocuments, { isLoading: isRequestingDocs }] = useRequestAdditionalDocumentsMutation();
+  const [getDocumentViewUrl] = useLazyGetDocumentViewUrlQuery();
 
   const request = data?.data;
   const operators = operatorsData?.data || [];
@@ -184,11 +210,11 @@ export const ServiceRequestDetail: React.FC = () => {
               <span
                 className={cn(
                   'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border',
-                  statusColors[request.status] || statusColors.pending
+                  statusColors[request.status] || statusColors.draft
                 )}
               >
                 <StatusIcon status={request.status} className="h-4 w-4" />
-                {request.status.replace(/_/g, ' ')}
+                {STATUS_CONFIG[request.status]?.label || request.status.replace(/_/g, ' ')}
               </span>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -230,7 +256,7 @@ export const ServiceRequestDetail: React.FC = () => {
                           : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200'
                       )}
                     >
-                      {key.replace(/_/g, ' ')}
+                      {STATUS_CONFIG[value]?.label || key.replace(/_/g, ' ')}
                     </button>
                   ))}
                 </div>
@@ -264,16 +290,14 @@ export const ServiceRequestDetail: React.FC = () => {
                   {request.service?.name || request.serviceType?.name || 'Unknown Service'}
                 </p>
               </div>
-              {request.notes && request.notes.length > 0 && (
+              {request.userNotes && (
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Notes
+                    User Notes
                   </label>
-                  <div className="mt-1 text-gray-900 dark:text-white">
-                    {request.notes.map((note, i) => (
-                      <p key={i}>{note.content}</p>
-                    ))}
-                  </div>
+                  <p className="mt-1 text-gray-900 dark:text-white whitespace-pre-wrap">
+                    {request.userNotes}
+                  </p>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -282,20 +306,43 @@ export const ServiceRequestDetail: React.FC = () => {
                     Priority
                   </label>
                   <p className="mt-1 text-gray-900 dark:text-white capitalize">
-                    {request.priority || 'Medium'}
+                    {request.priority || 'Normal'}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Service Type
+                    Submitted At
                   </label>
                   <p className="mt-1 text-gray-900 dark:text-white">
-                    {request.service?.name || request.serviceType?.name || 'Unknown'}
+                    {request.submittedAt ? new Date(request.submittedAt).toLocaleString() : 'Not submitted yet'}
                   </p>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Questionnaire / Form Data */}
+          {request.formData && Object.keys(request.formData).length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Questionnaire Responses
+              </h2>
+              <div className="space-y-3">
+                {Object.entries(request.formData).map(([key, value]) => (
+                  <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400 sm:w-1/3 capitalize">
+                      {key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim()}
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white sm:w-2/3 break-words">
+                      {typeof value === 'object' && value !== null
+                        ? JSON.stringify(value, null, 2)
+                        : String(value ?? '-')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Documents */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
@@ -322,27 +369,59 @@ export const ServiceRequestDetail: React.FC = () => {
                       <FileText className="h-5 w-5 text-blue-500" />
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">{doc.originalFilename || doc.filename || doc.originalName}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Uploaded {new Date(doc.createdAt || doc.uploadedAt || '').toLocaleDateString()}
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                            {(doc.category || '').replace(/_/g, ' ')}
+                          </span>
+                          <span className="text-xs text-gray-300 dark:text-gray-600">•</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {new Date(doc.createdAt || doc.uploadedAt || '').toLocaleDateString()}
+                          </span>
+                          <span className="text-xs text-gray-300 dark:text-gray-600">•</span>
+                          <span className={cn(
+                            'text-xs font-medium px-1.5 py-0.5 rounded capitalize',
+                            doc.status === 'approved' && 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400',
+                            doc.status === 'rejected' && 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400',
+                            doc.status === 'pending' && 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400',
+                          )}>
+                            {doc.status}
+                          </span>
+                        </div>
+                        {doc.adminNotes && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 italic">{doc.adminNotes}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => doc.filePath && window.open(doc.filePath, '_blank')}
+                        onClick={async () => {
+                          try {
+                            const result = await getDocumentViewUrl(doc.id).unwrap();
+                            if (result?.data?.url) window.open(result.data.url, '_blank');
+                          } catch { /* ignore */ }
+                        }}
                         className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
                         title="View"
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      <a
-                        href={doc.filePath || '#'}
-                        download={doc.originalFilename || doc.filename}
-                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 inline-flex"
+                      <button
+                        onClick={async () => {
+                          try {
+                            const result = await getDocumentViewUrl(doc.id).unwrap();
+                            if (result?.data?.url) {
+                              const a = document.createElement('a');
+                              a.href = result.data.url;
+                              a.download = doc.originalFilename || doc.filename || 'download';
+                              a.click();
+                            }
+                          } catch { /* ignore */ }
+                        }}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
                         title="Download"
                       >
                         <Download className="h-4 w-4" />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -352,25 +431,25 @@ export const ServiceRequestDetail: React.FC = () => {
                 No documents uploaded yet
               </p>
             )}
-            {request.documentStats && (
+            {request.documents && request.documents.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {request.documentStats.total}
+                      {request.documents.length}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-green-600">{request.documentStats.approved}</p>
+                    <p className="text-2xl font-bold text-green-600">{request.documents.filter((d: any) => d.status === 'approved').length}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Approved</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-yellow-600">{request.documentStats.pending}</p>
+                    <p className="text-2xl font-bold text-yellow-600">{request.documents.filter((d: any) => d.status === 'pending').length}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Pending</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-red-600">{request.documentStats.rejected}</p>
+                    <p className="text-2xl font-bold text-red-600">{request.documents.filter((d: any) => d.status === 'rejected').length}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Rejected</p>
                   </div>
                 </div>
@@ -412,30 +491,35 @@ export const ServiceRequestDetail: React.FC = () => {
 
             {/* Notes list */}
             <div className="space-y-4">
-              {request.notes && request.notes.filter(n => n.isInternal).length > 0 ? (
-                request.notes.filter(n => n.isInternal).map((note) => (
-                  <div key={note.id} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm font-medium flex-shrink-0">
-                      {note.createdBy?.firstName?.charAt(0) || 'A'}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {note.createdBy?.firstName} {note.createdBy?.lastName}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {new Date(note.createdAt).toLocaleString()}
-                        </span>
+              {(() => {
+                const parsedNotes = parseInternalNotes(request.internalNotes);
+                return parsedNotes.length > 0 ? (
+                  parsedNotes.map((note, idx) => (
+                    <div key={idx} className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm font-medium flex-shrink-0">
+                        A
                       </div>
-                      <p className="mt-1 text-gray-700 dark:text-gray-200">{note.content}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            Admin
+                          </span>
+                          {note.timestamp && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {new Date(note.timestamp).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-gray-700 dark:text-gray-200">{note.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                  No internal notes yet
-                </p>
-              )}
+                  ))
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                    No internal notes yet
+                  </p>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -449,12 +533,11 @@ export const ServiceRequestDetail: React.FC = () => {
             </h2>
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                {request.user?.firstName?.charAt(0)}
-                {request.user?.lastName?.charAt(0)}
+                {(request.user?.fullName || request.user?.firstName || 'U').charAt(0)}
               </div>
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">
-                  {request.user?.firstName} {request.user?.lastName}
+                  {request.user?.fullName || `${request.user?.firstName || ''} ${request.user?.lastName || ''}`.trim() || 'Unknown'}
                 </p>
                 <Link
                   to={`/users/${request.user?.id}`}
@@ -469,10 +552,10 @@ export const ServiceRequestDetail: React.FC = () => {
                 <Mail className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-700 dark:text-gray-200">{request.user?.email}</span>
               </div>
-              {request.user?.phoneNumber && (
+              {(request.user?.phoneNumber || request.user?.phone) && (
                 <div className="flex items-center gap-3 text-sm">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-700 dark:text-gray-200">{request.user?.phoneNumber}</span>
+                  <span className="text-gray-700 dark:text-gray-200">{request.user?.phoneNumber || request.user?.phone}</span>
                 </div>
               )}
             </div>
@@ -483,14 +566,14 @@ export const ServiceRequestDetail: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Assignment
             </h2>
-            {request.assignedTo ? (
+            {request.assignedOperator ? (
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center text-green-600 font-medium">
-                  {request.assignedTo.firstName?.charAt(0)}
+                  {(request.assignedOperator.fullName || request.assignedOperator.firstName || 'O').charAt(0)}
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {request.assignedTo.firstName} {request.assignedTo.lastName}
+                    {request.assignedOperator.fullName || `${request.assignedOperator.firstName || ''} ${request.assignedOperator.lastName || ''}`.trim()}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Operator</p>
                 </div>
@@ -518,25 +601,48 @@ export const ServiceRequestDetail: React.FC = () => {
               Timeline
             </h2>
             <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500 mt-2" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Created</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {new Date(request.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-              {request.updatedAt !== request.createdAt && (
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Last Updated</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(request.updatedAt).toLocaleString()}
-                    </p>
+              {request.statusHistory && request.statusHistory.length > 0 ? (
+                [...request.statusHistory]
+                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map((entry) => (
+                    <div key={entry.id} className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {STATUS_CONFIG[entry.fromStatus]?.label || entry.fromStatus} &rarr; {STATUS_CONFIG[entry.toStatus]?.label || entry.toStatus}
+                        </p>
+                        {(entry.notes || entry.reason) && (
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{entry.notes || entry.reason}</p>
+                        )}
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mt-2" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">Created</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {new Date(request.createdAt).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                  {request.updatedAt !== request.createdAt && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">Last Updated</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(request.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -554,30 +660,42 @@ export const ServiceRequestDetail: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Assign Operator
             </h3>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {operators.map((operator) => (
-                <button
-                  key={operator.id}
-                  onClick={() => handleAssignOperator(operator.id)}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                  Select Operator
+                </label>
+                <select
+                  defaultValue={request?.assignedOperator?.id || request?.assignedOperatorId || ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleAssignOperator(e.target.value);
+                    }
+                  }}
                   disabled={isAssigning}
-                  className={cn(
-                    'w-full flex items-center gap-3 p-3 rounded-lg border transition-colors',
-                    request?.assignedTo?.id === operator.id
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10'
-                  )}
+                  className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-medium">
-                    {operator.firstName?.charAt(0)}
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {operator.firstName} {operator.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{operator.email}</p>
-                  </div>
-                </button>
-              ))}
+                  <option value="" disabled>
+                    -- Choose an operator --
+                  </option>
+                  {operators.map((operator) => (
+                    <option key={operator.id} value={operator.id}>
+                      {operator.fullName || `${operator.firstName || ''} ${operator.lastName || ''}`.trim()} — {operator.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {isAssigning && (
+                <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Assigning...
+                </div>
+              )}
+              {operators.length === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No operators found. Please ensure users with the operator role exist.
+                </p>
+              )}
             </div>
             <div className="mt-4 flex justify-end">
               <button
