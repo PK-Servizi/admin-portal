@@ -322,11 +322,16 @@ export const Dashboard: React.FC = () => {
 
   // Chart data derived from API
   const STATUS_COLORS: Record<string, string> = {
-    pending: '#f59e0b',
-    in_progress: '#6366f1',
+    draft: '#94a3b8',
+    submitted: '#3b82f6',
+    payment_pending: '#f59e0b',
+    awaiting_form: '#8b5cf6',
+    awaiting_documents: '#a855f7',
+    in_review: '#6366f1',
+    missing_documents: '#f97316',
     completed: '#10b981',
-    cancelled: '#ef4444',
-    rejected: '#f43f5e',
+    closed: '#64748b',
+    rejected: '#ef4444',
   };
 
   const revenueData = (revenueMetrics?.trendData || []).map((d) => ({
@@ -334,11 +339,18 @@ export const Dashboard: React.FC = () => {
     revenue: d.amount,
   }));
 
-  const requestsByStatus = Object.entries(requestMetrics?.byStatus || {}).map(([name, value]) => ({
-    name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
-    value,
-    color: STATUS_COLORS[name] || '#64748b',
-  }));
+  // Backend returns byStatus as array [{status, count}], handle both formats
+  const requestsByStatus = Array.isArray(requestMetrics?.byStatus)
+    ? requestMetrics.byStatus.map((item: any) => ({
+        name: (item.status || 'Unknown').charAt(0).toUpperCase() + (item.status || '').slice(1).replace(/_/g, ' '),
+        value: parseInt(item.count) || 0,
+        color: STATUS_COLORS[item.status] || '#64748b',
+      }))
+    : Object.entries(requestMetrics?.byStatus || {}).map(([name, value]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '),
+        value: typeof value === 'number' ? value : parseInt(String(value)) || 0,
+        color: STATUS_COLORS[name] || '#64748b',
+      }));
 
   const requestsOverTime = (requestMetrics?.trendData || []).map((d) => ({
     day: format(new Date(d.date), 'EEE'),
