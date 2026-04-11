@@ -108,18 +108,33 @@ export const ReportsDashboard: React.FC = () => {
       : [];
 
   // Requests by type from API
-  // Backend returns byType array [{type, count}], not byServiceType object
-  const requestsByType = (requestMetrics?.byServiceType
-    ? Object.entries(requestMetrics.byServiceType).map(([name, value]: [string, any], i: number) => ({
-        name,
-        value,
-        color: CHART_COLORS[i % CHART_COLORS.length],
-      }))
-    : (requestMetrics?.byType || []).map((item: any, i: number) => ({
+  // Backend may return byType array [{type, count}] or byServiceType object/array
+  const requestsByType = (() => {
+    const byType = requestMetrics?.byType;
+    const byServiceType = requestMetrics?.byServiceType;
+    if (Array.isArray(byType) && byType.length > 0) {
+      return byType.map((item: any, i: number) => ({
         name: item.type || 'Unknown',
-        value: item.count || 0,
+        value: parseInt(item.count) || 0,
         color: CHART_COLORS[i % CHART_COLORS.length],
-      })));
+      }));
+    }
+    if (Array.isArray(byServiceType)) {
+      return byServiceType.map((item: any, i: number) => ({
+        name: item.type || item.name || 'Unknown',
+        value: parseInt(item.count) || 0,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      }));
+    }
+    if (byServiceType && typeof byServiceType === 'object') {
+      return Object.entries(byServiceType).map(([name, value]: [string, any], i: number) => ({
+        name,
+        value: typeof value === 'number' ? value : parseInt(String(value)) || 0,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      }));
+    }
+    return [];
+  })();
 
   // Backend returns byStatus array [{status, count}], not byStatus object
   const requestsByStatus = (requestMetrics?.byStatus && !Array.isArray(requestMetrics.byStatus)

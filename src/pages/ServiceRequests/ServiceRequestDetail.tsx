@@ -329,10 +329,16 @@ export const ServiceRequestDetail: React.FC = () => {
               </h2>
               <div className="space-y-3">
                 {Object.entries(request.formData)
-                  .filter(([, value]) => {
-                    // Hide base64 file data and empty values
-                    const str = String(value ?? '');
-                    return !str.startsWith('data:') && !str.startsWith('blob:');
+                  .filter(([key, value]) => {
+                    // Hide base64/file data fields
+                    const str = typeof value === 'string' ? value : JSON.stringify(value ?? '');
+                    if (str.includes('data:') || str.includes('base64,') || str.startsWith('blob:')) return false;
+                    // Hide fields that look like file uploads (very long encoded strings)
+                    if (typeof value === 'string' && value.length > 500) return false;
+                    // Hide keys that reference document/file uploads
+                    const lk = key.toLowerCase();
+                    if (lk.includes('document') && typeof value === 'string' && value.length > 200) return false;
+                    return true;
                   })
                   .map(([key, value]) => {
                     let displayValue: React.ReactNode;
