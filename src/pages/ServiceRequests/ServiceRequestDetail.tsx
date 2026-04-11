@@ -328,18 +328,45 @@ export const ServiceRequestDetail: React.FC = () => {
                 Questionnaire Responses
               </h2>
               <div className="space-y-3">
-                {Object.entries(request.formData).map(([key, value]) => (
-                  <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400 sm:w-1/3 capitalize">
-                      {key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim()}
-                    </label>
-                    <p className="text-sm text-gray-900 dark:text-white sm:w-2/3 break-words">
-                      {typeof value === 'object' && value !== null
-                        ? JSON.stringify(value, null, 2)
-                        : String(value ?? '-')}
-                    </p>
-                  </div>
-                ))}
+                {Object.entries(request.formData)
+                  .filter(([, value]) => {
+                    // Hide base64 file data and empty values
+                    const str = String(value ?? '');
+                    return !str.startsWith('data:') && !str.startsWith('blob:');
+                  })
+                  .map(([key, value]) => {
+                    let displayValue: React.ReactNode;
+                    const str = String(value ?? '-');
+
+                    if (typeof value === 'boolean') {
+                      displayValue = value ? 'Yes' : 'No';
+                    } else if (typeof value === 'object' && value !== null) {
+                      if (Array.isArray(value)) {
+                        displayValue = value.length > 0 ? value.join(', ') : '-';
+                      } else {
+                        displayValue = (
+                          <pre className="text-xs bg-gray-50 dark:bg-gray-900 p-2 rounded overflow-x-auto">
+                            {JSON.stringify(value, null, 2)}
+                          </pre>
+                        );
+                      }
+                    } else if (str === 'true' || str === 'false') {
+                      displayValue = str === 'true' ? 'Yes' : 'No';
+                    } else {
+                      displayValue = str;
+                    }
+
+                    return (
+                      <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400 sm:w-1/3 capitalize">
+                          {key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim()}
+                        </label>
+                        <p className="text-sm text-gray-900 dark:text-white sm:w-2/3 break-words">
+                          {displayValue}
+                        </p>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           )}
