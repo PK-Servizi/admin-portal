@@ -40,6 +40,11 @@ const CoursesPlaceholder = lazy(() => import('./pages/Courses').then(m => ({ def
 const SubscriptionPlans = lazy(() => import('./pages/Subscriptions/SubscriptionPlans'));
 const NotificationsAdmin = lazy(() => import('./pages/Notifications/NotificationsAdmin'));
 
+// Back Office pages
+const BackOfficeUsersList = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.BackOfficeUsersList })));
+const BackOfficeUserDetail = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.BackOfficeUserDetail })));
+const CreateInvoice = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.CreateInvoice })));
+
 /**
  * Loading Spinner Component
  */
@@ -178,6 +183,12 @@ function App() {
                     {/* Service Requests */}
                     <Route path="/service-requests" element={<ServiceRequestsList />} />
                     <Route path="/service-requests/:id" element={<ServiceRequestDetail />} />
+
+                  {/* Back Office */}
+                  <Route path="/backoffice" element={<BackOfficeUsersList />} />
+                  <Route path="/backoffice/:id" element={<BackOfficeUserDetail />} />
+                  <Route path="/backoffice/:userId/invoices/new" element={<CreateInvoice />} />
+                  <Route path="/backoffice/invoices/new" element={<CreateInvoice />} />
 
                   {/* Appointments */}
                   <Route path="/appointments" element={<AppointmentsPage />} />

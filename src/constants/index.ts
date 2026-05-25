@@ -100,6 +100,11 @@ export const STATUS = {
     REJECTED: 'rejected',
     ARCHIVED: 'archived',
   },
+  INVOICE: {
+    PENDING: 'pending',
+    PAID: 'paid',
+    CANCELLED: 'cancelled',
+  },
 } as const;
 
 // Priority Levels
@@ -118,6 +123,7 @@ export const ROLES = {
   MANAGER: 'manager',
   OPERATOR: 'operator',
   USER: 'user',
+  BACKOFFICE: 'backoffice',
 } as const;
 
 // Permissions
@@ -168,6 +174,12 @@ export const PERMISSIONS = {
   
   // Audit
   AUDIT_VIEW: 'audit:view',
+
+  // Back Office
+  BACKOFFICE_MANAGE: 'backoffice:manage',
+  BACKOFFICE_INVOICES_CREATE: 'backoffice_invoices:create',
+  BACKOFFICE_INVOICES_SEND: 'backoffice_invoices:send',
+  BACKOFFICE_INVOICES_VIEW: 'backoffice_invoices:view',
 } as const;
 
 // Notification Types

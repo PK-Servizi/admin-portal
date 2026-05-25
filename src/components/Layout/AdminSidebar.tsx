@@ -35,6 +35,7 @@ import {
   HelpCircle,
   Layers,
   Briefcase,
+  Building2,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -76,6 +77,12 @@ const menuItems: MenuItem[] = [
     label: 'Service Requests',
     icon: <ClipboardList className="h-5 w-5" />,
     path: '/service-requests',
+  },
+  {
+    key: 'backoffice',
+    label: 'Back Office',
+    icon: <Building2 className="h-5 w-5" />,
+    path: '/backoffice',
   },
   {
     key: 'subscriptions',

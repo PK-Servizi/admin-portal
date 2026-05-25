@@ -10,7 +10,14 @@ import {
   useCreateUserMutation,
 } from '@/services/api/users-admin.api';
 import { useGetAllRolesQuery, useAssignRoleToUserMutation } from '@/services/api/roles.api';
+import { useGetAdminServicesQuery } from '@/services/api/services.api';
+import {
+  useCreateBackOfficeUserMutation,
+  useUpdateBackOfficeServicesMutation,
+  useGetBackOfficeUserServicesQuery,
+} from '@/services/api/backoffice-admin.api';
 import { cn } from '@/lib/utils';
+import { ROLES } from '@/constants';
 import {
   ArrowLeft,
   Save,
@@ -22,6 +29,9 @@ import {
   Shield,
   Eye,
   EyeOff,
+  Briefcase,
+  CheckSquare,
+  Square,
 } from 'lucide-react';
 
 interface UserFormData {
@@ -53,6 +63,8 @@ export const UserForm: React.FC = () => {
   const [errors, setErrors] = useState<Partial<UserFormData>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+  const [serviceError, setServiceError] = useState('');
 
   // API hooks
   const { data: userData, isLoading: isLoadingUser } = useGetUserByIdQuery(id!, {
@@ -63,8 +75,29 @@ export const UserForm: React.FC = () => {
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [assignRoleToUser] = useAssignRoleToUserMutation();
 
+  // Backoffice-specific hooks
+  const [createBackOfficeUser, { isLoading: isCreatingBO }] = useCreateBackOfficeUserMutation();
+  const [updateBackOfficeServices, { isLoading: isUpdatingServices }] = useUpdateBackOfficeServicesMutation();
+
   const roles = rolesData?.data || [];
-  const isSubmitting = isCreating || isUpdating;
+
+  // Determine if selected role is backoffice
+  const selectedRole = roles.find((r) => r.id === formData.roleId);
+  const isBackofficeRole = selectedRole?.name?.toLowerCase() === ROLES.BACKOFFICE;
+
+  // Fetch services list only when backoffice role is selected
+  const { data: servicesData, isLoading: isLoadingServices } = useGetAdminServicesQuery(
+    { take: 200, isActive: true },
+    { skip: !isBackofficeRole }
+  );
+
+  // Fetch existing BO user service assignments when editing
+  const { data: boServicesData } = useGetBackOfficeUserServicesQuery(id!, {
+    skip: !isEditing || !isBackofficeRole,
+  });
+
+  const services = servicesData?.data || [];
+  const isSubmitting = isCreating || isUpdating || isCreatingBO || isUpdatingServices;
 
   // Populate form with user data when editing
   useEffect(() => {
@@ -81,6 +114,13 @@ export const UserForm: React.FC = () => {
       });
     }
   }, [userData, isEditing]);
+
+  // Populate selected services when editing a BO user
+  useEffect(() => {
+    if (boServicesData?.data && isBackofficeRole) {
+      setSelectedServiceIds(boServicesData.data.map((s) => s.serviceId));
+    }
+  }, [boServicesData, isBackofficeRole]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<UserFormData> = {};
@@ -117,8 +157,15 @@ export const UserForm: React.FC = () => {
       newErrors.roleId = 'Role is required';
     }
 
+    // Validate service assignment for backoffice users
+    if (isBackofficeRole && selectedServiceIds.length === 0) {
+      setServiceError('At least one service must be assigned to a back office user');
+    } else {
+      setServiceError('');
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0 && !(isBackofficeRole && selectedServiceIds.length === 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,6 +193,23 @@ export const UserForm: React.FC = () => {
         if (formData.roleId && formData.roleId !== userData?.data?.role?.id) {
           await assignRoleToUser({ userId: id!, data: { roleId: formData.roleId } }).unwrap();
         }
+
+        // Update BO service assignments if backoffice role
+        if (isBackofficeRole) {
+          await updateBackOfficeServices({
+            userId: id!,
+            data: { serviceIds: selectedServiceIds },
+          }).unwrap();
+        }
+      } else if (isBackofficeRole) {
+        // Use dedicated BO user creation endpoint
+        await createBackOfficeUser({
+          email: formData.email,
+          password: formData.password,
+          fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+          phone: formData.phoneNumber || undefined,
+          serviceIds: selectedServiceIds,
+        }).unwrap();
       } else {
         const result = await createUser({
           email: formData.email,
@@ -176,6 +240,31 @@ export const UserForm: React.FC = () => {
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
+    // Clear service error when role changes away from backoffice
+    if (field === 'roleId') {
+      setServiceError('');
+      if (!isBackofficeRole) {
+        setSelectedServiceIds([]);
+      }
+    }
+  };
+
+  const toggleService = (serviceId: string) => {
+    setSelectedServiceIds((prev) =>
+      prev.includes(serviceId)
+        ? prev.filter((id) => id !== serviceId)
+        : [...prev, serviceId]
+    );
+    if (serviceError) setServiceError('');
+  };
+
+  const toggleAllServices = () => {
+    if (selectedServiceIds.length === services.length) {
+      setSelectedServiceIds([]);
+    } else {
+      setSelectedServiceIds(services.map((s) => s.id));
+    }
+    if (serviceError) setServiceError('');
   };
 
   if (isEditing && isLoadingUser) {
@@ -336,6 +425,91 @@ export const UserForm: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Service Assignment (only for Backoffice role) */}
+          {isBackofficeRole && (
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-gray-400" />
+                Service Assignment
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Select the services this back office user is authorized to manage
+              </p>
+              {isLoadingServices ? (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading services...
+                </div>
+              ) : services.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No active services found. Create services first.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {/* Select All */}
+                  <button
+                    type="button"
+                    onClick={toggleAllServices}
+                    className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-2"
+                  >
+                    {selectedServiceIds.length === services.length ? (
+                      <CheckSquare className="h-4 w-4" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                    {selectedServiceIds.length === services.length ? 'Deselect All' : 'Select All'}
+                    <span className="text-gray-400 ml-1">
+                      ({selectedServiceIds.length}/{services.length})
+                    </span>
+                  </button>
+                  {/* Service list */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+                    {services.map((service) => {
+                      const isSelected = selectedServiceIds.includes(service.id);
+                      return (
+                        <button
+                          key={service.id}
+                          type="button"
+                          onClick={() => toggleService(service.id)}
+                          className={cn(
+                            'flex items-center gap-3 p-3 rounded-lg border text-left transition-colors',
+                            isSelected
+                              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600'
+                              : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          )}
+                        >
+                          {isSelected ? (
+                            <CheckSquare className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                          ) : (
+                            <Square className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                          )}
+                          <div className="min-w-0">
+                            <p className={cn(
+                              'text-sm font-medium truncate',
+                              isSelected
+                                ? 'text-blue-700 dark:text-blue-300'
+                                : 'text-gray-700 dark:text-gray-200'
+                            )}>
+                              {service.name}
+                            </p>
+                            {service.basePrice != null && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                €{Number(service.basePrice).toFixed(2)}
+                              </p>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {serviceError && (
+                <p className="mt-2 text-sm text-red-500">{serviceError}</p>
+              )}
+            </div>
+          )}
 
           {/* Password */}
           <div>

@@ -344,3 +344,51 @@ export const mockServiceTypes = {
     { id: 'st-3', name: 'Family Reunion', slug: 'family-reunion', isActive: true },
   ],
 };
+
+// ─── BackOffice ─────────────────────────────────────────
+export const mockBackOfficeUsers = {
+  success: true,
+  data: [
+    {
+      id: 'bo-1', email: 'agency1@tuocaf.com', firstName: 'Agency', lastName: 'One',
+      fullName: 'Agency One', isActive: true, role: { id: 'role-bo', name: 'backoffice' },
+      customerCount: 5, serviceCount: 3,
+      createdAt: '2025-06-01T10:00:00Z', updatedAt: '2025-06-13T10:00:00Z',
+    },
+    {
+      id: 'bo-2', email: 'agency2@tuocaf.com', firstName: 'Agency', lastName: 'Two',
+      fullName: 'Agency Two', isActive: true, role: { id: 'role-bo', name: 'backoffice' },
+      customerCount: 3, serviceCount: 2,
+      createdAt: '2025-06-05T10:00:00Z', updatedAt: '2025-06-12T10:00:00Z',
+    },
+  ],
+  pagination: { total: 2, page: 1, limit: 20, pages: 1 },
+};
+
+export const mockBackOfficeUserDetail = {
+  success: true,
+  data: {
+    id: 'bo-1', email: 'agency1@tuocaf.com', firstName: 'Agency', lastName: 'One',
+    fullName: 'Agency One', isActive: true, role: { id: 'role-bo', name: 'backoffice' },
+    services: [
+      { id: 'bus-1', serviceTypeId: 'st-1', serviceType: { id: 'st-1', name: 'Residence Permit' }, commission: 15, isActive: true },
+    ],
+    customers: [
+      { id: 'boc-1', firstName: 'Mario', lastName: 'Rossi', email: 'mario@example.com', fiscalCode: 'RSSMRA90A01H501A', createdAt: '2025-06-10T10:00:00Z' },
+    ],
+    createdAt: '2025-06-01T10:00:00Z', updatedAt: '2025-06-13T10:00:00Z',
+  },
+};
+
+export const mockBackOfficeInvoices = {
+  success: true,
+  data: [
+    {
+      id: 'inv-1', invoiceNumber: 'INV-2025-001', amount: 150, currency: 'EUR',
+      status: 'sent', userId: 'bo-1', issuedAt: '2025-06-10T10:00:00Z',
+      lineItems: [{ description: 'Residence Permit Service', quantity: 1, amount: 150, currency: 'EUR' }],
+      createdAt: '2025-06-10T10:00:00Z', updatedAt: '2025-06-10T10:00:00Z',
+    },
+  ],
+  pagination: { total: 1, page: 1, limit: 20, pages: 1 },
+};

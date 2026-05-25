@@ -25,6 +25,9 @@ import {
   mockSubscriptionMetrics,
   mockAuditLogs,
   mockServiceTypes,
+  mockBackOfficeUsers,
+  mockBackOfficeUserDetail,
+  mockBackOfficeInvoices,
 } from '../fixtures/mock-data';
 
 /**
@@ -225,6 +228,32 @@ export async function setupAllApiMocks(page: Page) {
   // FAQs
   await page.route(`${API_BASE}/faqs*`, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) })
+  );
+
+  // BackOffice
+  await page.route(`${API_BASE}/admin/backoffice-users*`, (route) => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201, contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: { id: 'bo-new', ...JSON.parse(route.request().postData() || '{}') } }),
+      });
+    }
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockBackOfficeUsers) });
+  });
+  await page.route(`${API_BASE}/admin/backoffice-users/*/`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockBackOfficeUserDetail) })
+  );
+  await page.route(`${API_BASE}/admin/invoices*`, (route) => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201, contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: { id: 'inv-new' } }),
+      });
+    }
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockBackOfficeInvoices) });
+  });
+  await page.route(`${API_BASE}/admin/requests*`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockServiceRequests) })
   );
 }
 

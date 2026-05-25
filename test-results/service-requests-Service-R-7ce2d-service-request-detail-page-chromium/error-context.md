@@ -1,0 +1,131 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img "TuoCaf" [ref=e10]
+      - generic [ref=e12]: Admin Panel
+    - button "Collapse sidebar" [ref=e13]:
+      - img [ref=e14]
+    - navigation [ref=e16]:
+      - generic [ref=e17]: Main Menu
+      - list [ref=e18]:
+        - listitem [ref=e19]:
+          - link "Dashboard" [ref=e20] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e22]
+            - generic [ref=e27]: Dashboard
+        - listitem [ref=e28]:
+          - link "Users" [ref=e29] [cursor=pointer]:
+            - /url: /users
+            - img [ref=e31]
+            - generic [ref=e36]: Users
+        - listitem [ref=e37]:
+          - link "Service Types" [ref=e38] [cursor=pointer]:
+            - /url: /service-types
+            - img [ref=e40]
+            - generic [ref=e44]: Service Types
+        - listitem [ref=e45]:
+          - link "Services" [ref=e46] [cursor=pointer]:
+            - /url: /services
+            - img [ref=e48]
+            - generic [ref=e51]: Services
+        - listitem [ref=e52]:
+          - link "Service Requests" [ref=e53] [cursor=pointer]:
+            - /url: /service-requests
+            - img [ref=e56]
+            - generic [ref=e59]: Service Requests
+        - listitem [ref=e60]:
+          - link "Back Office" [ref=e61] [cursor=pointer]:
+            - /url: /backoffice
+            - img [ref=e63]
+            - generic [ref=e67]: Back Office
+        - listitem [ref=e68]:
+          - link "Subscriptions" [ref=e69] [cursor=pointer]:
+            - /url: /subscriptions
+            - img [ref=e71]
+            - generic [ref=e73]: Subscriptions
+        - listitem [ref=e74]:
+          - link "Appointments" [ref=e75] [cursor=pointer]:
+            - /url: /appointments
+            - img [ref=e77]
+            - generic [ref=e79]: Appointments
+        - listitem [ref=e80]:
+          - link "Payments" [ref=e81] [cursor=pointer]:
+            - /url: /payments
+            - img [ref=e83]
+            - generic [ref=e86]: Payments
+        - listitem [ref=e87]:
+          - link "Documents" [ref=e88] [cursor=pointer]:
+            - /url: /documents
+            - img [ref=e90]
+            - generic [ref=e93]: Documents
+        - listitem [ref=e94]:
+          - link "CMS" [ref=e95] [cursor=pointer]:
+            - /url: /cms
+            - img [ref=e97]
+            - generic [ref=e100]: CMS
+        - listitem [ref=e101]:
+          - link "Courses" [ref=e102] [cursor=pointer]:
+            - /url: /courses
+            - img [ref=e104]
+            - generic [ref=e106]: Courses
+        - listitem [ref=e107]:
+          - link "Roles & Permissions" [ref=e108] [cursor=pointer]:
+            - /url: /roles
+            - img [ref=e110]
+            - generic [ref=e112]: Roles & Permissions
+        - listitem [ref=e113]:
+          - link "Reports" [ref=e114] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e116]
+            - generic [ref=e118]: Reports
+        - listitem [ref=e119]:
+          - link "Audit Logs" [ref=e120] [cursor=pointer]:
+            - /url: /audit
+            - img [ref=e122]
+            - generic [ref=e126]: Audit Logs
+        - listitem [ref=e127]:
+          - link "Settings" [ref=e128] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e130]
+            - generic [ref=e133]: Settings
+    - generic [ref=e134]:
+      - link "Notifications" [ref=e136] [cursor=pointer]:
+        - /url: /notifications
+        - img [ref=e138]
+        - generic [ref=e141]: Notifications
+      - link "Help & Support" [ref=e142] [cursor=pointer]:
+        - /url: /help
+        - img [ref=e143]
+        - generic [ref=e146]: Help & Support
+      - button "Logout" [ref=e147]:
+        - img [ref=e148]
+        - generic [ref=e151]: Logout
+  - generic [ref=e152]:
+    - banner [ref=e153]:
+      - generic [ref=e154]:
+        - generic [ref=e157]:
+          - img [ref=e158]
+          - textbox "Search anything..." [ref=e161]
+          - generic [ref=e162]:
+            - img [ref=e163]
+            - generic [ref=e165]: K
+        - generic [ref=e166]:
+          - button "Toggle theme" [ref=e167]:
+            - img
+          - button "Notifications" [ref=e168]:
+            - img
+          - button "AU Admin User super_admin" [ref=e169]:
+            - generic [ref=e171]: AU
+            - generic [ref=e172]:
+              - paragraph [ref=e173]: Admin User
+              - paragraph [ref=e174]: super_admin
+    - main [ref=e175]:
+      - generic [ref=e178]:
+        - img [ref=e180]
+        - heading "Something went wrong" [level=3] [ref=e182]
+        - paragraph [ref=e183]: notes.split is not a function
+        - button "Try Again" [ref=e184]
+```

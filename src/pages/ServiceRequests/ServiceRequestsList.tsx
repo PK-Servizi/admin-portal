@@ -12,6 +12,7 @@ import {
   useBulkUpdateStatusMutation,
 } from '@/services/api/admin.api';
 import { useGetAllUsersQuery } from '@/services/api/users-admin.api';
+import { useGetBackOfficeUsersQuery } from '@/services/api/backoffice-admin.api';
 import { cn } from '@/lib/utils';
 import {
   Plus,
@@ -43,6 +44,7 @@ interface RequestFilters {
   priority: string;
   serviceTypeId: string;
   assignedOperatorId: string;
+  backOfficeUserId: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -104,6 +106,7 @@ export const ServiceRequestsListPage: React.FC = () => {
     priority: searchParams.get('priority') || '',
     serviceTypeId: searchParams.get('serviceTypeId') || '',
     assignedOperatorId: searchParams.get('assignedOperatorId') || '',
+    backOfficeUserId: searchParams.get('backOfficeUserId') || '',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [searchInput, setSearchInput] = useState(filters.search);
@@ -128,12 +131,15 @@ export const ServiceRequestsListPage: React.FC = () => {
     priority: filters.priority || undefined,
     serviceTypeId: filters.serviceTypeId || undefined,
     assignedOperatorId: filters.assignedOperatorId || undefined,
+    userId: filters.backOfficeUserId || undefined,
   });
 
   const { data: operatorsData } = useGetAllUsersQuery({
     role: 'operator',
     take: 100,
   });
+
+  const { data: boUsersData } = useGetBackOfficeUsersQuery({ take: 100 });
 
   const [updateStatus] = useUpdateRequestStatusMutation();
   const [assignOperator, { isLoading: isAssigning }] = useAssignToOperatorMutation();
@@ -143,6 +149,7 @@ export const ServiceRequestsListPage: React.FC = () => {
   const totalCount = data?.pagination?.total || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
   const operators = operatorsData?.data || [];
+  const boUsers = boUsersData?.data || [];
 
   // Update URL params when filters change
   const updateSearchParams = (newFilters: Partial<RequestFilters>, newPage?: number) => {
@@ -154,6 +161,7 @@ export const ServiceRequestsListPage: React.FC = () => {
     if (updatedFilters.priority) params.set('priority', updatedFilters.priority);
     if (updatedFilters.serviceTypeId) params.set('serviceTypeId', updatedFilters.serviceTypeId);
     if (updatedFilters.assignedOperatorId) params.set('assignedOperatorId', updatedFilters.assignedOperatorId);
+    if (updatedFilters.backOfficeUserId) params.set('backOfficeUserId', updatedFilters.backOfficeUserId);
     if (newPage && newPage > 1) params.set('page', String(newPage));
     
     setSearchParams(params);
@@ -182,6 +190,7 @@ export const ServiceRequestsListPage: React.FC = () => {
       priority: '',
       serviceTypeId: '',
       assignedOperatorId: '',
+      backOfficeUserId: '',
     });
     setSearchInput('');
     setPage(1);
@@ -372,7 +381,7 @@ export const ServiceRequestsListPage: React.FC = () => {
         {/* Filter options */}
         {showFilters && (
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Status
@@ -421,6 +430,23 @@ export const ServiceRequestsListPage: React.FC = () => {
                   {operators.map((op) => (
                     <option key={op.id} value={op.id}>
                       {op.fullName || `${op.firstName || ''} ${op.lastName || ''}`.trim()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                  BO User
+                </label>
+                <select
+                  value={filters.backOfficeUserId}
+                  onChange={(e) => handleFilterChange('backOfficeUserId', e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Sources</option>
+                  {boUsers.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.fullName || `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email}
                     </option>
                   ))}
                 </select>

@@ -287,6 +287,7 @@ export interface ServiceRequest {
   documents?: Document[];
   statusHistory?: RequestStatusHistory[];
   paymentId?: string;
+  backOfficeUserId?: string;
   estimatedCompletionDate?: string;
   submittedAt?: string;
   formCompletedAt?: string;

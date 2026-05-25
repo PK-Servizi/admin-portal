@@ -32,6 +32,7 @@ import {
   Loader2,
   MoreVertical,
   Plus,
+  CreditCard,
 } from 'lucide-react';
 import { STATUS } from '@/constants';
 import { STATUS_CONFIG } from '@/types/service-request.types';
@@ -270,6 +271,15 @@ export const ServiceRequestDetail: React.FC = () => {
             <Edit className="h-4 w-4" />
             Edit
           </Link>
+          {request?.backOfficeUserId && (
+            <Link
+              to={`/backoffice/${request.backOfficeUserId}/invoices/new?serviceRequestId=${id}`}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              <CreditCard className="h-4 w-4" />
+              Create Invoice
+            </Link>
+          )}
         </div>
       </div>
 
