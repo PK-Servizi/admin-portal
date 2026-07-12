@@ -72,16 +72,34 @@ const StatusIcon: React.FC<{ status: string; className?: string }> = ({ status, 
   }
 };
 
-/** Parse the backend internalNotes string into structured note entries */
-function parseInternalNotes(notes: string | null | undefined): Array<{ timestamp: string; author: string; content: string }> {
+/** Parse the backend internalNotes payload into structured note entries */
+function parseInternalNotes(notes: unknown): Array<{ timestamp: string; author: string; content: string }> {
   if (!notes) return [];
-  return notes.split('\n').filter(Boolean).map((line) => {
-    const match = line.match(/^\[(.+?)\]\s*Admin\s+(.+?):\s*(.+)$/);
-    if (match) {
-      return { timestamp: match[1], author: match[2], content: match[3] };
-    }
-    return { timestamp: '', author: '', content: line };
-  });
+
+  const lines = Array.isArray(notes)
+    ? notes.flatMap((note) => {
+        if (typeof note === 'string') return [note];
+        if (note && typeof note === 'object') {
+          const record = note as Record<string, unknown>;
+          const content = record.content ?? record.note ?? record.text ?? record.message;
+          return content ? [String(content)] : [];
+        }
+        return [];
+      })
+    : typeof notes === 'string'
+      ? notes.split('\n')
+      : [String(notes)];
+
+  return lines
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const match = line.match(/^\[(.+?)\]\s*Admin\s+(.+?):\s*(.+)$/);
+      if (match) {
+        return { timestamp: match[1], author: match[2], content: match[3] };
+      }
+      return { timestamp: '', author: '', content: line };
+    });
 }
 
 export const ServiceRequestDetail: React.FC = () => {

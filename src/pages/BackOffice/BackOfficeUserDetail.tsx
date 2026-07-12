@@ -193,7 +193,7 @@ export const BackOfficeUserDetail: React.FC = () => {
                   >
                     <Briefcase className="h-4 w-4 text-blue-500 flex-shrink-0" />
                     <span className="text-sm text-gray-900 dark:text-white truncate">
-                      {s.service?.name || s.serviceId.slice(0, 8)}
+                      {s.service?.name || s.name || s.serviceId?.slice(0, 8) || s.id?.slice(0, 8)}
                     </span>
                   </div>
                 ))}

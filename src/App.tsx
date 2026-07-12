@@ -43,6 +43,8 @@ const NotificationsAdmin = lazy(() => import('./pages/Notifications/Notification
 // Back Office pages
 const BackOfficeUsersList = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.BackOfficeUsersList })));
 const BackOfficeUserDetail = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.BackOfficeUserDetail })));
+const BackOfficeRequestsList = lazy(() => import('./pages/BackOffice/BackOfficeRequestsList').then(m => ({ default: m.BackOfficeRequestsList })));
+const BackOfficeRequestDetail = lazy(() => import('./pages/BackOffice/BackOfficeRequestDetail').then(m => ({ default: m.BackOfficeRequestDetail })));
 const CreateInvoice = lazy(() => import('./pages/BackOffice').then(m => ({ default: m.CreateInvoice })));
 
 /**
@@ -187,6 +189,8 @@ function App() {
                   {/* Back Office */}
                   <Route path="/backoffice" element={<BackOfficeUsersList />} />
                   <Route path="/backoffice/:id" element={<BackOfficeUserDetail />} />
+                  <Route path="/backoffice/requests" element={<BackOfficeRequestsList />} />
+                  <Route path="/backoffice/requests/:id" element={<BackOfficeRequestDetail />} />
                   <Route path="/backoffice/:userId/invoices/new" element={<CreateInvoice />} />
                   <Route path="/backoffice/invoices/new" element={<CreateInvoice />} />
 

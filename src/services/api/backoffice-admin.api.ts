@@ -63,11 +63,9 @@ export interface UpdateBackOfficeServicesData {
 
 export interface CreateInvoiceData {
   backOfficeUserId: string;
-  serviceRequestId?: string;
-  amount: number;
-  description?: string;
+  serviceRequestIds?: string[];
+  lineItems: InvoiceLineItem[];
   notes?: string;
-  lineItems?: InvoiceLineItem[];
 }
 
 export interface InvoiceLineItem {
@@ -177,7 +175,7 @@ export const backofficeAdminApi = baseApi.injectEndpoints({
     }),
 
     /** Get assigned services for a BO user */
-    getBackOfficeUserServices: builder.query<ApiResponse<BackOfficeUserService[]>, string>({
+    getBackOfficeUserServices: builder.query<ApiResponse<any[]>, string>({
       query: (userId) => `/admin/backoffice-users/${userId}/services`,
       providesTags: (_result, _error, userId) => [
         { type: API_TAGS.Service, id: `BO_${userId}` },
@@ -262,11 +260,103 @@ export const backofficeAdminApi = baseApi.injectEndpoints({
     /** Get service requests submitted by back office users */
     getBackOfficeRequests: builder.query<PaginatedApiResponse<any[]>, BackOfficeRequestFilters>({
       query: (filters) => ({
-        url: '/admin/requests',
-        params: { ...filters, source: 'backoffice' },
+        url: '/admin/backoffice-requests',
+        params: filters,
       }),
       providesTags: [
         { type: API_TAGS.ServiceRequest, id: 'BO_REQUESTS' },
+      ],
+    }),
+
+    /** Get a single back office request detail */
+    getBackOfficeRequestDetail: builder.query<ApiResponse<any>, string>({
+      query: (id) => `/admin/backoffice-requests/${id}`,
+      providesTags: (_result, _error, id) => [
+        { type: API_TAGS.ServiceRequest, id },
+      ],
+    }),
+
+    /** Start review of a back office request */
+    startBackOfficeReview: builder.mutation<ApiResponse<any>, string>({
+      query: (id) => ({
+        url: `/admin/backoffice-requests/${id}/start-review`,
+        method: 'POST',
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: API_TAGS.ServiceRequest, id },
+        { type: API_TAGS.ServiceRequest, id: 'BO_REQUESTS' },
+      ],
+    }),
+
+    /** Request more information from back office */
+    requestBackOfficeInfo: builder.mutation<ApiResponse<any>, { id: string; reason: string }>({
+      query: ({ id, reason }) => ({
+        url: `/admin/backoffice-requests/${id}/request-information`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.ServiceRequest, id },
+        { type: API_TAGS.ServiceRequest, id: 'BO_REQUESTS' },
+      ],
+    }),
+
+    /** Approve a back office request */
+    approveBackOfficeRequest: builder.mutation<ApiResponse<any>, { id: string; notes?: string }>({
+      query: ({ id, notes }) => ({
+        url: `/admin/backoffice-requests/${id}/approve`,
+        method: 'POST',
+        body: { notes },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.ServiceRequest, id },
+        { type: API_TAGS.ServiceRequest, id: 'BO_REQUESTS' },
+      ],
+    }),
+
+    /** Reject a back office request */
+    rejectBackOfficeRequest: builder.mutation<ApiResponse<any>, { id: string; reason: string }>({
+      query: ({ id, reason }) => ({
+        url: `/admin/backoffice-requests/${id}/reject`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: API_TAGS.ServiceRequest, id },
+        { type: API_TAGS.ServiceRequest, id: 'BO_REQUESTS' },
+      ],
+    }),
+
+    // ──── Invitation Management ────
+
+    /** Send invitation (grant invoice access) */
+    sendInvitation: builder.mutation<ApiResponse<any>, { recipientUserId: string; customerId: string; requestId: string }>({
+      query: (data) => ({
+        url: '/admin/invitations/send',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: [
+        { type: API_TAGS.User, id: 'BO_LIST' },
+      ],
+    }),
+
+    /** Resend invitation */
+    resendInvitation: builder.mutation<ApiResponse<any>, string>({
+      query: (id) => ({
+        url: `/admin/invitations/${id}/resend`,
+        method: 'POST',
+      }),
+    }),
+
+    /** Revoke invitation */
+    revokeInvitation: builder.mutation<ApiResponse<any>, string>({
+      query: (id) => ({
+        url: `/admin/invitations/${id}/revoke`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        { type: API_TAGS.User, id: 'BO_LIST' },
       ],
     }),
   }),
@@ -289,4 +379,13 @@ export const {
   useCreateBulkInvoiceMutation,
   // BO Requests
   useGetBackOfficeRequestsQuery,
+  useGetBackOfficeRequestDetailQuery,
+  useStartBackOfficeReviewMutation,
+  useRequestBackOfficeInfoMutation,
+  useApproveBackOfficeRequestMutation,
+  useRejectBackOfficeRequestMutation,
+  // Invitations
+  useSendInvitationMutation,
+  useResendInvitationMutation,
+  useRevokeInvitationMutation,
 } = backofficeAdminApi;

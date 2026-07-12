@@ -129,9 +129,7 @@ export const CreateInvoice: React.FC = () => {
 
       const result = await createInvoice({
         backOfficeUserId: selectedUserId,
-        amount: totalAmount,
-        description: description.trim() || undefined,
-        notes: notes.trim() || undefined,
+        notes: notes.trim() || description.trim() || undefined,
         lineItems: validItems,
       }).unwrap();
 
